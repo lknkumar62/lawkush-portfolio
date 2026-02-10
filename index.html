@@ -2,79 +2,123 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Lawkush Portfolio Firebase</title>
+  <title>User + Admin Login System</title>
 
   <style>
     body {
+      margin: 0;
       background: black;
-      color: white;
       font-family: Arial;
+      color: white;
       text-align: center;
     }
-    button {
-      padding: 10px 20px;
-      margin: 5px;
-      cursor: pointer;
-      border: none;
-      border-radius: 8px;
-    }
-    .box {
+
+    .neon-box {
+      width: 420px;
+      margin: 60px auto;
+      padding: 35px;
+      border-radius: 20px;
       border: 2px solid cyan;
-      padding: 20px;
-      margin: 20px auto;
-      width: 350px;
-      border-radius: 15px;
+      box-shadow: 0 0 25px cyan;
+      background: rgba(0,0,0,0.9);
     }
+
+    h2 {
+      text-shadow: 0 0 12px cyan;
+      margin-bottom: 20px;
+    }
+
     input {
-      padding: 10px;
       width: 90%;
-      margin: 5px;
-      border-radius: 8px;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 12px;
       border: none;
+      outline: none;
+      font-size: 15px;
+    }
+
+    button {
+      padding: 12px 18px;
+      margin: 10px 5px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      box-shadow: 0 0 15px cyan;
+      transform: scale(1.05);
+    }
+
+    .btn-main {
+      background: cyan;
+      color: black;
+    }
+
+    .btn-google {
+      background: white;
+      width: 90%;
+      margin-top: 15px;
+    }
+
+    #adminPanel {
+      display: none;
+      margin-top: 30px;
+    }
+
+    #status {
+      margin-top: 15px;
+      color: lime;
+      font-weight: bold;
+    }
+
+    #error {
+      margin-top: 10px;
+      color: red;
+      font-weight: bold;
     }
   </style>
 </head>
 
 <body>
 
-  <h1 id="heroName">Loading...</h1>
-  <p id="heroTagline"></p>
-  <img id="heroImage" width="180" style="border-radius:50%;">
-
-  <hr>
-
-  <!-- USER LOGIN -->
-  <div class="box">
+  <!-- LOGIN BOX -->
+  <div class="neon-box">
     <h2>👤 User Login</h2>
 
-    <input id="userEmail" placeholder="Email">
-    <input id="userPass" type="password" placeholder="Password">
+    <input id="email" placeholder="Enter Email">
+    <input id="password" type="password" placeholder="Enter Password">
 
-    <button onclick="emailLogin()">Login</button>
-    <button onclick="emailSignup()">Signup</button>
+    <button class="btn-main" onclick="loginUser()">Login</button>
+    <button class="btn-main" onclick="signupUser()">Signup</button>
 
-    <br><br>
-    <button onclick="googleLogin()">Login with Google</button>
+    <button class="btn-google" onclick="googleLogin()">
+      Login with Google
+    </button>
 
-    <p id="userStatus"></p>
-    <button onclick="logout()">Logout</button>
+    <p id="status"></p>
+    <p id="error"></p>
+
+    <button onclick="logoutUser()">Logout</button>
   </div>
 
   <!-- ADMIN PANEL -->
-  <div id="adminPanel" class="box" style="display:none;">
+  <div class="neon-box" id="adminPanel">
     <h2>🔐 Admin Dashboard</h2>
 
-    <input id="editName" placeholder="Hero Name">
-    <input id="editTag" placeholder="Hero Tagline">
+    <input id="editName" placeholder="Update Name">
+    <input id="editTag" placeholder="Update Tagline">
 
-    <button onclick="updateProfile()">Save Profile</button>
+    <button class="btn-main" onclick="saveProfile()">
+      Save Profile
+    </button>
   </div>
 
-
 <script type="module">
-  // Firebase Imports
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   import {
     getAuth,
@@ -86,7 +130,13 @@
     onAuthStateChanged
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-  // ✅ Your Firebase Config
+  import {
+    getFirestore,
+    doc,
+    setDoc
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  // ✅ Firebase Config
   const firebaseConfig = {
     apiKey: "AIzaSyBgjSRBDfaL0FAb7_Tjb3vKpBw1qqevDyw",
     authDomain: "lawkush-portfolio.firebaseapp.com",
@@ -96,104 +146,98 @@
     appId: "1:682826833656:web:c500f3637e88cf0e89e50d"
   };
 
-  // Init Firebase
+  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
   const auth = getAuth(app);
+  const db = getFirestore(app);
 
-  // ✅ ADMIN UID (Only you can edit)
-  const ADMIN_UID = "NeFVRM4IBJes38S6vHcL632GHKh2";
+  // ✅ Admin Email Detect
+  const ADMIN_EMAIL = "lawkusd660@gmail.com";
 
-  let siteData = null;
-
-  // Default Website Data
-  const defaultData = {
-    profile: {
-      image: "./profile.png",
-      name: "Lawkush Kumar",
-      tagline: "Creative Developer & Digital Creator"
-    }
-  };
-
-  // Load Website Data
-  async function loadWebsite() {
-    const ref = doc(db, "portfolio", "site");
-    const snap = await getDoc(ref);
-
-    if (snap.exists()) {
-      siteData = snap.data();
-    } else {
-      siteData = defaultData;
-      await setDoc(ref, defaultData);
-    }
-    renderSite();
+  // Show Messages
+  function showMsg(msg) {
+    document.getElementById("status").innerText = msg;
+    document.getElementById("error").innerText = "";
   }
 
-  // Render
-  function renderSite() {
-    document.getElementById("heroImage").src = siteData.profile.image;
-    document.getElementById("heroName").innerText = siteData.profile.name;
-    document.getElementById("heroTagline").innerText = siteData.profile.tagline;
+  function showError(msg) {
+    document.getElementById("error").innerText = msg;
+    document.getElementById("status").innerText = "";
   }
 
-  // Save Profile
-  async function saveWebsite() {
-    const ref = doc(db, "portfolio", "site");
-    await setDoc(ref, siteData);
-    alert("✅ Saved Permanently!");
-    renderSite();
-  }
-
-  // Update Profile
-  window.updateProfile = function () {
-    siteData.profile.name = document.getElementById("editName").value;
-    siteData.profile.tagline = document.getElementById("editTag").value;
-    saveWebsite();
-  };
-
-  // USER LOGIN FUNCTIONS
-  window.googleLogin = async function () {
-    const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
-  };
-
-  window.emailLogin = async function () {
-    const email = document.getElementById("userEmail").value;
-    const pass = document.getElementById("userPass").value;
-    await signInWithEmailAndPassword(auth, email, pass);
-  };
-
-  window.emailSignup = async function () {
-    const email = document.getElementById("userEmail").value;
-    const pass = document.getElementById("userPass").value;
-    await createUserWithEmailAndPassword(auth, email, pass);
-  };
-
-  window.logout = async function () {
-    await signOut(auth);
-  };
-
-  // Auth Listener
+  // Auto Detect Admin/User
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      document.getElementById("userStatus").innerText =
-        "Logged in as: " + user.email;
-
-      // Admin Access
-      if (user.uid === ADMIN_UID) {
+      if (user.email === ADMIN_EMAIL) {
         document.getElementById("adminPanel").style.display = "block";
+        showMsg("🔥 Admin Logged In Successfully!");
       } else {
         document.getElementById("adminPanel").style.display = "none";
+        showMsg("✅ User Logged In Successfully!");
       }
-
     } else {
-      document.getElementById("userStatus").innerText = "Not logged in";
       document.getElementById("adminPanel").style.display = "none";
     }
   });
 
-  loadWebsite();
+  // LOGIN
+  window.loginUser = async function () {
+    try {
+      const email = document.getElementById("email").value;
+      const pass = document.getElementById("password").value;
 
+      await signInWithEmailAndPassword(auth, email, pass);
+      showMsg("✅ Login Successful!");
+    } catch (err) {
+      showError("❌ Login Failed: " + err.message);
+    }
+  };
+
+  // SIGNUP
+  window.signupUser = async function () {
+    try {
+      const email = document.getElementById("email").value;
+      const pass = document.getElementById("password").value;
+
+      await createUserWithEmailAndPassword(auth, email, pass);
+      showMsg("✅ Signup Successful!");
+    } catch (err) {
+      showError("❌ Signup Failed: " + err.message);
+    }
+  };
+
+  // GOOGLE LOGIN
+  window.googleLogin = async function () {
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      showMsg("✅ Google Login Successful!");
+    } catch (err) {
+      showError("❌ Google Login Failed: " + err.message);
+    }
+  };
+
+  // LOGOUT
+  window.logoutUser = async function () {
+    await signOut(auth);
+    showMsg("❌ Logged Out Successfully!");
+  };
+
+  // ADMIN SAVE PROFILE
+  window.saveProfile = async function () {
+    try {
+      const name = document.getElementById("editName").value;
+      const tag = document.getElementById("editTag").value;
+
+      await setDoc(doc(db, "portfolio", "site"), {
+        profile: { name, tagline: tag }
+      });
+
+      alert("✅ Profile Updated Permanently!");
+    } catch (err) {
+      alert("❌ Error Saving: " + err.message);
+    }
+  };
 </script>
 
 </body>
