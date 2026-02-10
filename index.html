@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lawkush Kumar - Portfolio</title>
+    <title>Lawkush Kumar | Professional Portfolio</title>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -18,18 +19,20 @@
         }
 
         :root {
-            --neon-blue: #00f3ff;
-            --neon-pink: #ff00ff;
-            --neon-purple: #bf00ff;
-            --neon-green: #00ff88;
-            --dark-bg: #0a0a0a;
+            --primary: #00f3ff;
+            --secondary: #ff00ff;
+            --accent: #00ff88;
+            --dark: #0a0a0a;
+            --card: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--dark-bg);
+            font-family: 'Poppins', sans-serif;
+            background: var(--dark);
             color: white;
             overflow-x: hidden;
+            line-height: 1.6;
         }
 
         /* Animated Background */
@@ -39,375 +42,317 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
-            background: linear-gradient(45deg, #0a0a0a, #1a0033, #0a0a0a, #001a33);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            z-index: -2;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 0, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 243, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 0, 255, 0.1) 0%, transparent 40%);
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .floating-shapes {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: -1;
-        }
-
-        .shape {
-            position: absolute;
-            filter: blur(50px);
-            opacity: 0.5;
-            animation: float 20s infinite;
-        }
-
-        .shape:nth-child(1) {
-            width: 300px;
-            height: 300px;
-            background: var(--neon-purple);
-            border-radius: 50%;
-            top: 10%;
-            left: 10%;
-            animation-delay: 0s;
-        }
-
-        .shape:nth-child(2) {
-            width: 200px;
-            height: 200px;
-            background: var(--neon-blue);
-            border-radius: 50%;
-            top: 60%;
-            right: 10%;
-            animation-delay: 5s;
-        }
-
-        .shape:nth-child(3) {
-            width: 250px;
-            height: 250px;
-            background: var(--neon-pink);
-            border-radius: 50%;
-            bottom: 10%;
-            left: 30%;
-            animation-delay: 10s;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -30px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
-        }
-
-        /* Navigation */
-        .navbar {
+        .grid-overlay {
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            padding: 20px 50px;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 1000;
             background: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        nav.scrolled {
+            padding: 15px 5%;
+            background: rgba(10, 10, 10, 0.95);
         }
 
         .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink));
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
         }
 
         .nav-links {
             display: flex;
-            gap: 30px;
+            gap: 40px;
             align-items: center;
         }
 
         .nav-links a {
-            color: white;
+            color: rgba(255, 255, 255, 0.7);
             text-decoration: none;
+            font-weight: 500;
             transition: all 0.3s;
             position: relative;
         }
 
         .nav-links a:hover {
-            color: var(--neon-blue);
-            text-shadow: 0 0 10px var(--neon-blue);
+            color: var(--primary);
         }
 
-        .auth-buttons {
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .auth-section {
             display: flex;
             gap: 15px;
+            align-items: center;
         }
 
         .btn {
-            padding: 10px 25px;
+            padding: 12px 28px;
             border: none;
-            border-radius: 25px;
+            border-radius: 50px;
+            font-weight: 600;
             cursor: pointer;
-            font-weight: bold;
             transition: all 0.3s;
+            font-size: 0.95rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 0.9rem;
+            letter-spacing: 0.5px;
         }
 
-        .btn-login {
+        .btn-outline {
             background: transparent;
-            border: 2px solid var(--neon-blue);
-            color: var(--neon-blue);
+            border: 2px solid var(--primary);
+            color: var(--primary);
         }
 
-        .btn-login:hover {
-            background: var(--neon-blue);
+        .btn-outline:hover {
+            background: var(--primary);
             color: black;
-            box-shadow: 0 0 20px var(--neon-blue);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.4);
+            transform: translateY(-2px);
         }
 
-        .btn-signup {
-            background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink));
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
         }
 
-        .btn-signup:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(191, 0, 255, 0.5);
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 243, 255, 0.3);
         }
 
-        .user-menu {
+        .user-info {
             display: none;
             align-items: center;
             gap: 15px;
         }
 
-        .user-menu.active {
+        .user-info.active {
             display: flex;
         }
 
         .user-avatar {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
-            border: 2px solid var(--neon-blue);
-            cursor: pointer;
-        }
-
-        .logout-btn {
-            background: rgba(255, 0, 0, 0.2);
-            border: 1px solid rgba(255, 0, 0, 0.5);
-            color: #ff4444;
-            padding: 8px 20px;
-            border-radius: 20px;
+            border: 3px solid var(--primary);
             cursor: pointer;
             transition: all 0.3s;
+            object-fit: cover;
         }
 
-        .logout-btn:hover {
-            background: rgba(255, 0, 0, 0.3);
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+        .user-avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px var(--primary);
         }
 
         /* Hero Section */
         .hero {
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+            padding: 120px 5% 80px;
             position: relative;
-            padding: 100px 20px 20px;
         }
 
-        .circle-container {
-            position: relative;
-            width: 350px;
-            height: 350px;
-            margin-bottom: 50px;
+        .hero-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            max-width: 1400px;
+            width: 100%;
         }
 
-        .rotating-ring {
+        .hero-content h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+        .hero-content h1 span {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-content p {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 30px;
+            max-width: 500px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+        }
+
+        .hero-image {
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        .profile-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+        }
+
+        .profile-ring {
             position: absolute;
             width: 100%;
             height: 100%;
-            border: 3px solid transparent;
-            border-top: 3px solid var(--neon-blue);
             border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: var(--primary);
             animation: rotate 10s linear infinite;
         }
 
-        .rotating-ring:nth-child(2) {
+        .profile-ring:nth-child(2) {
             width: 90%;
             height: 90%;
             top: 5%;
             left: 5%;
-            border-top: 3px solid var(--neon-pink);
-            animation: rotate 15s linear infinite reverse;
+            border-top-color: var(--secondary);
+            animation-duration: 15s;
+            animation-direction: reverse;
         }
 
-        .rotating-ring:nth-child(3) {
+        .profile-ring:nth-child(3) {
             width: 80%;
             height: 80%;
             top: 10%;
             left: 10%;
-            border-top: 3px solid var(--neon-green);
-            animation: rotate 20s linear infinite;
+            border-top-color: var(--accent);
+            animation-duration: 20s;
         }
 
         @keyframes rotate {
-            from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
 
-        .profile-image {
+        .profile-img {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 250px;
-            height: 250px;
+            width: 300px;
+            height: 300px;
             border-radius: 50%;
             overflow: hidden;
             border: 5px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 50px rgba(0, 243, 255, 0.5);
-            transition: all 0.5s ease;
-            background: #1a1a2e;
+            box-shadow: 
+                0 0 60px rgba(0, 243, 255, 0.3),
+                inset 0 0 60px rgba(0, 243, 255, 0.1);
         }
 
-        .profile-image:hover {
-            transform: translate(-50%, -50%) scale(1.05);
-            box-shadow: 0 0 80px rgba(0, 243, 255, 0.8);
-        }
-
-        .profile-image img {
+        .profile-img img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.5s;
         }
 
-        .hero-text {
+        .profile-img:hover img {
+            transform: scale(1.1);
+        }
+
+        /* Sections */
+        section {
+            padding: 100px 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
             text-align: center;
-            z-index: 1;
+            margin-bottom: 60px;
         }
 
-        .hero-text h1 {
-            font-size: 3.5rem;
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink), var(--neon-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes glow {
-            from { filter: drop-shadow(0 0 20px var(--neon-blue)); }
-            to { filter: drop-shadow(0 0 30px var(--neon-pink)); }
-        }
-
-        .hero-text p {
-            font-size: 1.3rem;
-            color: #aaa;
-            margin-bottom: 30px;
-        }
-
-        .scroll-indicator {
-            position: absolute;
-            bottom: 30px;
-            animation: bounce 2s infinite;
-            cursor: pointer;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-20px); }
-            60% { transform: translateY(-10px); }
-        }
-
-        .scroll-indicator span {
-            display: block;
-            width: 30px;
-            height: 50px;
-            border: 2px solid var(--neon-blue);
-            border-radius: 20px;
-            position: relative;
-        }
-
-        .scroll-indicator span::before {
-            content: '';
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 6px;
-            height: 6px;
-            background: var(--neon-blue);
-            border-radius: 50%;
-            animation: scroll 2s infinite;
-        }
-
-        @keyframes scroll {
-            0% { opacity: 1; top: 10px; }
-            100% { opacity: 0; top: 30px; }
-        }
-
-        /* Social Media Section */
-        .social-section {
-            min-height: 100vh;
-            padding: 100px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .section-title {
+        .section-header h2 {
             font-size: 2.5rem;
-            margin-bottom: 50px;
-            text-align: center;
-            position: relative;
+            font-weight: 700;
+            margin-bottom: 15px;
         }
 
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 3px;
-            background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink));
-            border-radius: 2px;
+        .section-header p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1rem;
         }
 
+        /* Social Section */
         .social-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 30px;
-            max-width: 1200px;
-            width: 100%;
         }
 
         .social-card {
-            position: relative;
-            padding: 40px;
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--card);
+            border: 1px solid var(--border);
             border-radius: 20px;
+            padding: 40px;
             text-align: center;
+            transition: all 0.4s;
             cursor: pointer;
-            transition: all 0.3s ease;
+            position: relative;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            text-decoration: none;
-            color: white;
-            display: block;
         }
 
         .social-card::before {
@@ -417,7 +362,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
             transition: left 0.5s;
         }
 
@@ -425,258 +370,120 @@
             left: 100%;
         }
 
-        .social-card.instagram {
-            box-shadow: 0 0 20px rgba(225, 48, 108, 0.3);
-            border-color: rgba(225, 48, 108, 0.5);
-        }
-
-        .social-card.instagram:hover {
-            box-shadow: 0 0 40px rgba(225, 48, 108, 0.6), inset 0 0 20px rgba(225, 48, 108, 0.1);
-            transform: translateY(-10px) scale(1.02);
-            border-color: #e1306c;
-        }
-
-        .social-card.twitter {
-            box-shadow: 0 0 20px rgba(29, 161, 242, 0.3);
-            border-color: rgba(29, 161, 242, 0.5);
-        }
-
-        .social-card.twitter:hover {
-            box-shadow: 0 0 40px rgba(29, 161, 242, 0.6), inset 0 0 20px rgba(29, 161, 242, 0.1);
-            transform: translateY(-10px) scale(1.02);
-            border-color: #1da1f2;
-        }
-
-        .social-card.telegram {
-            box-shadow: 0 0 20px rgba(0, 136, 204, 0.3);
-            border-color: rgba(0, 136, 204, 0.5);
-        }
-
-        .social-card.telegram:hover {
-            box-shadow: 0 0 40px rgba(0, 136, 204, 0.6), inset 0 0 20px rgba(0, 136, 204, 0.1);
-            transform: translateY(-10px) scale(1.02);
-            border-color: #0088cc;
-        }
-
-        .social-card.facebook {
-            box-shadow: 0 0 20px rgba(66, 103, 178, 0.3);
-            border-color: rgba(66, 103, 178, 0.5);
-        }
-
-        .social-card.facebook:hover {
-            box-shadow: 0 0 40px rgba(66, 103, 178, 0.6), inset 0 0 20px rgba(66, 103, 178, 0.1);
-            transform: translateY(-10px) scale(1.02);
-            border-color: #4267B2;
+        .social-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0, 243, 255, 0.2);
         }
 
         .social-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            display: block;
         }
 
-        .social-card.instagram .social-icon { color: #e1306c; }
-        .social-card.twitter .social-icon { color: #1da1f2; }
-        .social-card.telegram .social-icon { color: #0088cc; }
-        .social-card.facebook .social-icon { color: #4267B2; }
-
-        .social-name {
+        .social-card h3 {
             font-size: 1.5rem;
-            font-weight: bold;
             margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
         }
 
-        .social-link {
-            color: #aaa;
+        .social-card p {
+            color: rgba(255, 255, 255, 0.5);
             font-size: 0.9rem;
-            word-break: break-all;
         }
 
-        /* Products Section */
-        .products-section {
-            min-height: 100vh;
-            padding: 100px 20px;
-        }
-
+        /* Products */
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
         }
 
         .product-card {
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--card);
+            border: 1px solid var(--border);
             border-radius: 20px;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
+            transition: all 0.4s;
         }
 
         .product-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-            border-color: var(--neon-blue);
+            border-color: var(--secondary);
+            box-shadow: 0 20px 40px rgba(255, 0, 255, 0.2);
         }
 
         .product-image {
             width: 100%;
-            height: 250px;
+            height: 220px;
             object-fit: cover;
+            border-bottom: 1px solid var(--border);
         }
 
         .product-info {
             padding: 25px;
         }
 
-        .product-title {
+        .product-info h3 {
             font-size: 1.3rem;
             margin-bottom: 10px;
-            color: var(--neon-blue);
         }
 
-        .product-description {
-            color: #aaa;
+        .product-info p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.95rem;
             margin-bottom: 15px;
-            line-height: 1.6;
         }
 
         .product-price {
-            font-size: 1.5rem;
-            color: var(--neon-green);
-            font-weight: bold;
-            margin-bottom: 15px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 20px;
         }
 
-        .buy-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink));
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .buy-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(191, 0, 255, 0.5);
-        }
-
-        /* Blog Section */
-        .blog-section {
-            min-height: 100vh;
-            padding: 100px 20px;
-        }
-
-        .blog-grid {
+        /* Blogs */
+        .blogs-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
         }
 
         .blog-card {
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--card);
+            border: 1px solid var(--border);
             border-radius: 20px;
             padding: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
+            transition: all 0.4s;
             cursor: pointer;
         }
 
         .blog-card:hover {
             transform: translateY(-5px);
-            border-color: var(--neon-green);
+            border-color: var(--accent);
             box-shadow: 0 10px 30px rgba(0, 255, 136, 0.1);
         }
 
         .blog-date {
-            color: var(--neon-pink);
+            color: var(--secondary);
             font-size: 0.9rem;
             margin-bottom: 10px;
+            font-weight: 500;
         }
 
-        .blog-title {
+        .blog-card h3 {
             font-size: 1.4rem;
             margin-bottom: 15px;
-            color: white;
+            line-height: 1.4;
         }
 
-        .blog-excerpt {
-            color: #aaa;
+        .blog-card p {
+            color: rgba(255, 255, 255, 0.6);
             line-height: 1.6;
         }
 
-        /* Blog Detail Page */
-        .blog-detail {
-            display: none;
-            min-height: 100vh;
-            padding: 100px 20px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .blog-detail.active {
-            display: block;
-        }
-
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 24px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-bottom: 30px;
-            transition: all 0.3s;
-        }
-
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateX(-5px);
-        }
-
-        .blog-detail-content {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .blog-detail h1 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .blog-detail .date {
-            color: var(--neon-pink);
-            margin-bottom: 30px;
-            display: block;
-        }
-
-        .blog-detail .content {
-            line-height: 1.8;
-            color: #ddd;
-            font-size: 1.1rem;
-        }
-
-        /* Auth Modal */
-        .auth-modal {
+        /* Modal */
+        .modal {
             display: none;
             position: fixed;
             top: 0;
@@ -688,62 +495,53 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            backdrop-filter: blur(10px);
         }
 
-        .auth-modal.active {
+        .modal.active {
             display: flex;
         }
 
-        .auth-container {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
+        .modal-content {
+            background: linear-gradient(145deg, #1a1a2e, #0f0f1e);
+            border: 1px solid var(--border);
             border-radius: 20px;
             padding: 40px;
             max-width: 450px;
             width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 50px rgba(0, 243, 255, 0.2);
             position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
-        .auth-tabs {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 30px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .auth-tab {
-            padding: 10px 20px;
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
             background: none;
             border: none;
-            color: #aaa;
+            color: white;
+            font-size: 1.5rem;
             cursor: pointer;
-            font-size: 1rem;
-            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: all 0.3s;
         }
 
-        .auth-tab.active {
-            color: var(--neon-blue);
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(90deg);
         }
 
-        .auth-tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--neon-blue);
-            box-shadow: 0 0 10px var(--neon-blue);
-        }
-
-        .auth-form {
-            display: none;
-        }
-
-        .auth-form.active {
-            display: block;
+        .modal-title {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 700;
         }
 
         .form-group {
@@ -753,89 +551,64 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #aaa;
+            color: rgba(255, 255, 255, 0.7);
             font-size: 0.9rem;
+            font-weight: 500;
         }
 
-        .form-group input {
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
             width: 100%;
-            padding: 12px 15px;
+            padding: 14px 18px;
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
             color: white;
             font-size: 1rem;
             transition: all 0.3s;
+            font-family: inherit;
         }
 
-        .form-group input:focus {
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
             outline: none;
-            border-color: var(--neon-blue);
-            box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
         }
 
-        .submit-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 10px;
+        .file-input {
+            display: none;
         }
 
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 243, 255, 0.4);
-        }
-
-        .google-btn {
-            width: 100%;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            color: white;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .google-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: var(--neon-blue);
-        }
-
-        .divider {
+        .file-label {
+            display: block;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
             text-align: center;
-            margin: 20px 0;
-            color: #666;
-            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
-        .divider::before,
-        .divider::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            width: 45%;
-            height: 1px;
-            background: rgba(255, 255, 255, 0.1);
+        .file-label:hover {
+            border-color: var(--primary);
+            color: var(--primary);
         }
 
-        .divider::before { left: 0; }
-        .divider::after { right: 0; }
+        .preview-img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 12px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .preview-img.active {
+            display: block;
+        }
 
         /* Admin Panel */
         .admin-panel {
@@ -845,7 +618,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: var(--dark-bg);
+            background: var(--dark);
             z-index: 3000;
             overflow-y: auto;
         }
@@ -855,12 +628,12 @@
         }
 
         .admin-header {
-            background: linear-gradient(90deg, #1a1a2e, #16213e);
-            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 20px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--border);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -868,41 +641,41 @@
 
         .admin-title {
             font-size: 1.5rem;
-            background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink));
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .admin-nav {
             display: flex;
-            gap: 20px;
-            padding: 20px;
+            gap: 10px;
+            padding: 20px 5%;
             background: rgba(255, 255, 255, 0.02);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            flex-wrap: wrap;
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
         }
 
-        .admin-nav-btn {
+        .admin-nav button {
             padding: 12px 24px;
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border);
             color: white;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s;
+            white-space: nowrap;
+            font-weight: 500;
         }
 
-        .admin-nav-btn.active,
-        .admin-nav-btn:hover {
-            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+        .admin-nav button:hover,
+        .admin-nav button.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             border-color: transparent;
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
         }
 
         .admin-content {
-            padding: 30px;
-            max-width: 1400px;
-            margin: 0 auto;
+            padding: 40px 5%;
         }
 
         .admin-section {
@@ -915,36 +688,38 @@
 
         .admin-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
         }
 
         .admin-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
         }
 
         .admin-card h3 {
-            margin-bottom: 20px;
-            color: var(--neon-blue);
-            font-size: 1.2rem;
+            margin-bottom: 25px;
+            font-size: 1.3rem;
+            color: var(--primary);
         }
 
-        .item-list {
+        .items-list {
             list-style: none;
+            max-height: 400px;
+            overflow-y: auto;
         }
 
-        .item-list li {
+        .items-list li {
             background: rgba(255, 255, 255, 0.03);
             padding: 15px;
             margin-bottom: 10px;
-            border-radius: 8px;
+            border-radius: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
         }
 
         .item-actions {
@@ -952,172 +727,48 @@
             gap: 10px;
         }
 
-        .edit-btn, .delete-btn {
-            padding: 5px 12px;
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            border-radius: 8px;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
-            font-size: 0.8rem;
             transition: all 0.3s;
+            font-weight: 500;
         }
 
-        .edit-btn {
+        .btn-edit {
             background: rgba(0, 243, 255, 0.2);
-            color: var(--neon-blue);
+            color: var(--primary);
         }
 
-        .delete-btn {
+        .btn-edit:hover {
+            background: rgba(0, 243, 255, 0.3);
+        }
+
+        .btn-delete {
             background: rgba(255, 0, 0, 0.2);
             color: #ff4444;
         }
 
-        .edit-btn:hover {
-            background: rgba(0, 243, 255, 0.3);
-            box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
-        }
-
-        .delete-btn:hover {
+        .btn-delete:hover {
             background: rgba(255, 0, 0, 0.3);
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
-        }
-
-        .add-btn {
-            width: 100%;
-            padding: 15px;
-            margin-top: 15px;
-            background: linear-gradient(45deg, var(--neon-green), var(--neon-blue));
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .add-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 4000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 500px;
-            width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 50px rgba(0, 243, 255, 0.2);
-            position: relative;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: all 0.3s;
-        }
-
-        .close-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: rotate(90deg);
-        }
-
-        .modal-title {
-            font-size: 1.8rem;
-            margin-bottom: 25px;
-            text-align: center;
-            background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .file-input-wrapper {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-            width: 100%;
-        }
-
-        .file-input-wrapper input[type=file] {
-            position: absolute;
-            left: -9999px;
-        }
-
-        .file-input-label {
-            display: block;
-            padding: 12px 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px dashed rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: #aaa;
-        }
-
-        .file-input-label:hover {
-            border-color: var(--neon-blue);
-            color: var(--neon-blue);
-        }
-
-        .preview-image {
-            max-width: 100%;
-            max-height: 200px;
-            border-radius: 10px;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .preview-image.active {
-            display: block;
         }
 
         /* Toast */
         .toast {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            background: linear-gradient(45deg, var(--neon-green), var(--neon-blue));
-            color: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            top: 100px;
+            right: 30px;
+            padding: 16px 28px;
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            color: black;
+            border-radius: 12px;
+            font-weight: 600;
             transform: translateX(400px);
-            transition: transform 0.3s ease;
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             z-index: 5000;
-            font-weight: bold;
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
         }
 
         .toast.show {
@@ -1125,7 +776,8 @@
         }
 
         .toast.error {
-            background: linear-gradient(45deg, #ff4444, #ff8800);
+            background: linear-gradient(135deg, #ff4444, #ff8800);
+            color: white;
         }
 
         /* Loading */
@@ -1136,11 +788,12 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             z-index: 6000;
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            gap: 20px;
         }
 
         .loading.active {
@@ -1148,10 +801,10 @@
         }
 
         .spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-top: 3px solid var(--neon-blue);
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -1160,81 +813,49 @@
             to { transform: rotate(360deg); }
         }
 
-        .loading p {
-            margin-top: 20px;
-            color: var(--neon-blue);
-        }
-
         /* Responsive */
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 15px 20px;
+        @media (max-width: 968px) {
+            .hero-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .profile-container {
+                width: 300px;
+                height: 300px;
+            }
+
+            .profile-img {
+                width: 220px;
+                height: 220px;
             }
 
             .nav-links {
                 display: none;
             }
-
-            .hero-text h1 {
-                font-size: 2rem;
-            }
-
-            .circle-container {
-                width: 280px;
-                height: 280px;
-            }
-
-            .profile-image {
-                width: 200px;
-                height: 200px;
-            }
-
-            .social-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .auth-container {
-                padding: 30px 20px;
-            }
-        }
-
-        .reveal {
-            opacity: 0;
-            transform: translateY(50px);
-            transition: all 0.8s ease;
-        }
-
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .main-content {
-            display: block;
-        }
-
-        .main-content.hidden {
-            display: none;
         }
     </style>
 </head>
 <body>
-    <!-- Background -->
     <div class="bg-animation"></div>
-    <div class="floating-shapes">
-        <div class="shape"></div>
-        <div class="shape"></div>
-        <div class="shape"></div>
-    </div>
+    <div class="grid-overlay"></div>
 
     <!-- Loading -->
     <div class="loading" id="loading">
         <div class="spinner"></div>
-        <p>Loading...</p>
+        <p style="color: var(--primary); font-weight: 600;">Loading...</p>
     </div>
 
     <!-- Navigation -->
-    <nav class="navbar">
+    <nav id="navbar">
         <div class="logo">Lawkush Kumar</div>
         <div class="nav-links">
             <a href="#home">Home</a>
@@ -1242,158 +863,140 @@
             <a href="#products">Products</a>
             <a href="#blogs">Blogs</a>
         </div>
-        <div class="auth-buttons" id="authButtons">
-            <button class="btn btn-login" onclick="openAuthModal('login')">Login</button>
-            <button class="btn btn-signup" onclick="openAuthModal('signup')">Sign Up</button>
-        </div>
-        <div class="user-menu" id="userMenu">
-            <span id="userName"></span>
-            <img src="" alt="User" class="user-avatar" id="userAvatar" onclick="toggleAdmin()">
-            <button class="logout-btn" onclick="logout()">Logout</button>
+        <div class="auth-section">
+            <div id="authButtons">
+                <button class="btn btn-outline" onclick="openAuth('login')">Login</button>
+                <button class="btn btn-primary" onclick="openAuth('signup')">Sign Up</button>
+            </div>
+            <div class="user-info" id="userInfo">
+                <span id="userName" style="font-weight: 600;"></span>
+                <img src="" alt="User" class="user-avatar" id="userAvatar" onclick="toggleAdmin()">
+                <button class="btn btn-outline" onclick="logout()" style="padding: 8px 20px; font-size: 0.85rem;">Logout</button>
+            </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="main-content" id="mainContent">
-        <!-- Hero -->
-        <section class="hero" id="home">
-            <div class="circle-container">
-                <div class="rotating-ring"></div>
-                <div class="rotating-ring"></div>
-                <div class="rotating-ring"></div>
-                <div class="profile-image">
-                    <img src="" alt="Lawkush Kumar" id="heroImage">
+    <!-- Hero -->
+    <section class="hero" id="home">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>Hi, I'm <span>Lawkush Kumar</span></h1>
+                <p id="heroTagline">Creative Developer & Digital Creator. Building amazing digital experiences.</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" onclick="document.getElementById('products').scrollIntoView({behavior: 'smooth'})">View Products</button>
+                    <button class="btn btn-outline" onclick="document.getElementById('social').scrollIntoView({behavior: 'smooth'})">Connect</button>
                 </div>
             </div>
-            <div class="hero-text">
-                <h1 id="heroName">Lawkush Kumar</h1>
-                <p id="heroTagline">Creative Developer & Digital Creator</p>
+            <div class="hero-image">
+                <div class="profile-container">
+                    <div class="profile-ring"></div>
+                    <div class="profile-ring"></div>
+                    <div class="profile-ring"></div>
+                    <div class="profile-img">
+                        <img src="" alt="Lawkush Kumar" id="profileImage">
+                    </div>
+                </div>
             </div>
-            <div class="scroll-indicator" onclick="document.getElementById('social').scrollIntoView({behavior: 'smooth'})">
-                <span></span>
-            </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Social -->
-        <section class="social-section" id="social">
-            <h2 class="section-title reveal">Connect With Me</h2>
-            <div class="social-grid" id="socialGrid"></div>
-        </section>
+    <!-- Social -->
+    <section id="social">
+        <div class="section-header">
+            <h2>Connect With Me</h2>
+            <p>Follow me on social media for updates</p>
+        </div>
+        <div class="social-grid" id="socialGrid"></div>
+    </section>
 
-        <!-- Products -->
-        <section class="products-section" id="products">
-            <h2 class="section-title reveal">My Products</h2>
-            <div class="products-grid" id="productsGrid"></div>
-        </section>
+    <!-- Products -->
+    <section id="products">
+        <div class="section-header">
+            <h2>My Products</h2>
+            <p>Premium digital products for you</p>
+        </div>
+        <div class="products-grid" id="productsGrid"></div>
+    </section>
 
-        <!-- Blogs -->
-        <section class="blog-section" id="blogs">
-            <h2 class="section-title reveal">Latest Blogs</h2>
-            <div class="blog-grid" id="blogGrid"></div>
-        </section>
-    </div>
-
-    <!-- Blog Detail -->
-    <div class="blog-detail" id="blogDetail">
-        <button class="back-btn" onclick="closeBlogDetail()">← Back to Blogs</button>
-        <article class="blog-detail-content">
-            <h1 id="blogDetailTitle"></h1>
-            <span class="date" id="blogDetailDate"></span>
-            <div class="content" id="blogDetailContent"></div>
-        </article>
-    </div>
+    <!-- Blogs -->
+    <section id="blogs">
+        <div class="section-header">
+            <h2>Latest Blogs</h2>
+            <p>Thoughts, tutorials and insights</p>
+        </div>
+        <div class="blogs-grid" id="blogsGrid"></div>
+    </section>
 
     <!-- Auth Modal -->
-    <div class="auth-modal" id="authModal">
-        <div class="auth-container">
-            <button class="close-btn" onclick="closeAuthModal()">×</button>
-            <div class="auth-tabs">
-                <button class="auth-tab active" onclick="switchAuthTab('login')">Login</button>
-                <button class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</button>
-            </div>
-            
-            <!-- Login Form -->
-            <form class="auth-form active" id="loginForm" onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="loginEmail" required placeholder="Enter your email">
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" id="loginPassword" required placeholder="Enter your password">
-                </div>
-                <button type="submit" class="submit-btn">Login</button>
-                
-                <div class="divider">OR</div>
-                
-                <button type="button" class="google-btn" onclick="loginWithGoogle()">
-                    <span>🔍</span> Login with Google
-                </button>
-            </form>
-
-            <!-- Signup Form -->
-            <form class="auth-form" id="signupForm" onsubmit="handleSignup(event)">
-                <div class="form-group">
-                    <label>Name</label>
-                    <input type="text" id="signupName" required placeholder="Enter your name">
+    <div class="modal" id="authModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('authModal')">&times;</button>
+            <h2 class="modal-title" id="authTitle">Login</h2>
+            <form id="authForm" onsubmit="handleAuth(event)">
+                <div id="nameField" style="display: none;">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="authName" placeholder="Your name">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Email</label>
-                    <input type="email" id="signupEmail" required placeholder="Enter your email">
+                    <input type="email" id="authEmail" placeholder="your@email.com" required>
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" id="signupPassword" required placeholder="Create password (min 6 chars)">
+                    <input type="password" id="authPassword" placeholder="••••••••" required>
                 </div>
-                <button type="submit" class="submit-btn">Sign Up</button>
-                
-                <div class="divider">OR</div>
-                
-                <button type="button" class="google-btn" onclick="loginWithGoogle()">
-                    <span>🔍</span> Sign up with Google
-                </button>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;" id="authSubmit">Login</button>
             </form>
+            <div style="text-align: center; margin: 20px 0; color: rgba(255,255,255,0.5);">or</div>
+            <button class="btn btn-outline" style="width: 100%;" onclick="googleAuth()">
+                <i class="fab fa-google"></i> Continue with Google
+            </button>
+            <p style="text-align: center; margin-top: 20px; color: rgba(255,255,255,0.6);">
+                <span id="authSwitchText">Don't have an account?</span>
+                <a href="#" onclick="toggleAuthMode()" style="color: var(--primary); text-decoration: none; font-weight: 600;" id="authSwitchLink">Sign Up</a>
+            </p>
         </div>
     </div>
 
     <!-- Admin Panel -->
     <div class="admin-panel" id="adminPanel">
         <div class="admin-header">
-            <h1 class="admin-title">🔐 Admin Dashboard</h1>
-            <button class="logout-btn" onclick="closeAdmin()">Close Panel</button>
+            <div class="admin-title">⚡ Admin Dashboard</div>
+            <button class="btn btn-outline" onclick="closeAdmin()">Close Panel</button>
         </div>
         <div class="admin-nav">
-            <button class="admin-nav-btn active" onclick="showAdminSection('profile')">Profile</button>
-            <button class="admin-nav-btn" onclick="showAdminSection('social')">Social Links</button>
-            <button class="admin-nav-btn" onclick="showAdminSection('products')">Products</button>
-            <button class="admin-nav-btn" onclick="showAdminSection('blogs')">Blogs</button>
+            <button class="active" onclick="showAdminTab('profile')">Profile</button>
+            <button onclick="showAdminTab('social')">Social Links</button>
+            <button onclick="showAdminTab('products')">Products</button>
+            <button onclick="showAdminTab('blogs')">Blogs</button>
         </div>
         <div class="admin-content">
             <!-- Profile -->
             <div class="admin-section active" id="admin-profile">
                 <div class="admin-grid">
                     <div class="admin-card">
-                        <h3>🖼️ Profile Image</h3>
-                        <div class="form-group">
-                            <div class="file-input-wrapper">
-                                <input type="file" id="profileImageInput" accept="image/*" onchange="previewImage(this, 'profilePreview')">
-                                <label for="profileImageInput" class="file-input-label">Click to select new image</label>
-                            </div>
-                            <img id="profilePreview" class="preview-image">
-                        </div>
-                        <button class="add-btn" onclick="updateProfileImage()">Update Image</button>
+                        <h3>Profile Image</h3>
+                        <input type="file" class="file-input" id="profileInput" accept="image/*" onchange="previewImage(this, 'profilePreview')">
+                        <label for="profileInput" class="file-label">
+                            <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                            Click to upload new image
+                        </label>
+                        <img id="profilePreview" class="preview-img">
+                        <button class="btn btn-primary" style="width: 100%; margin-top: 15px;" onclick="updateProfile()">Update Profile</button>
                     </div>
                     <div class="admin-card">
-                        <h3>📝 Hero Text</h3>
+                        <h3>Profile Info</h3>
                         <div class="form-group">
                             <label>Name</label>
-                            <input type="text" id="adminHeroName">
+                            <input type="text" id="adminName" placeholder="Your name">
                         </div>
                         <div class="form-group">
                             <label>Tagline</label>
-                            <input type="text" id="adminHeroTagline">
+                            <input type="text" id="adminTagline" placeholder="Your tagline">
                         </div>
-                        <button class="add-btn" onclick="updateHeroText()">Update Text</button>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="updateProfileInfo()">Save Changes</button>
                     </div>
                 </div>
             </div>
@@ -1401,27 +1004,33 @@
             <!-- Social -->
             <div class="admin-section" id="admin-social">
                 <div class="admin-card">
-                    <h3>🔗 Social Links</h3>
-                    <ul class="item-list" id="socialList"></ul>
-                    <button class="add-btn" onclick="openAddModal('social')">Add New</button>
+                    <h3>Social Media Links</h3>
+                    <ul class="items-list" id="adminSocialList"></ul>
+                    <button class="btn btn-primary" style="width: 100%; margin-top: 15px;" onclick="openAddModal('social')">
+                        <i class="fas fa-plus"></i> Add New Link
+                    </button>
                 </div>
             </div>
 
             <!-- Products -->
             <div class="admin-section" id="admin-products">
                 <div class="admin-card">
-                    <h3>🛍️ Products</h3>
-                    <ul class="item-list" id="productList"></ul>
-                    <button class="add-btn" onclick="openAddModal('product')">Add New</button>
+                    <h3>Products</h3>
+                    <ul class="items-list" id="adminProductList"></ul>
+                    <button class="btn btn-primary" style="width: 100%; margin-top: 15px;" onclick="openAddModal('product')">
+                        <i class="fas fa-plus"></i> Add New Product
+                    </button>
                 </div>
             </div>
 
             <!-- Blogs -->
             <div class="admin-section" id="admin-blogs">
                 <div class="admin-card">
-                    <h3>📝 Blogs</h3>
-                    <ul class="item-list" id="blogList"></ul>
-                    <button class="add-btn" onclick="openAddModal('blog')">Add New</button>
+                    <h3>Blog Posts</h3>
+                    <ul class="items-list" id="adminBlogList"></ul>
+                    <button class="btn btn-primary" style="width: 100%; margin-top: 15px;" onclick="openAddModal('blog')">
+                        <i class="fas fa-plus"></i> Add New Blog
+                    </button>
                 </div>
             </div>
         </div>
@@ -1430,11 +1039,11 @@
     <!-- Edit Modal -->
     <div class="modal" id="editModal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('editModal')">×</button>
-            <h2 class="modal-title" id="editModalTitle">Add/Edit</h2>
-            <form id="editForm" onsubmit="handleEditSubmit(event)">
-                <div id="editFormFields"></div>
-                <button type="submit" class="submit-btn">Save</button>
+            <button class="modal-close" onclick="closeModal('editModal')">&times;</button>
+            <h2 class="modal-title" id="editTitle">Add/Edit</h2>
+            <form id="editForm" onsubmit="saveEdit(event)">
+                <div id="editFields"></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Save</button>
             </form>
         </div>
     </div>
@@ -1443,472 +1052,360 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // Firebase Configuration
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyBgjSRBDfaL0FAb7_Tjb3vKpBw1qqevDyw",
             authDomain: "lawkush-portfolio.firebaseapp.com",
             projectId: "lawkush-portfolio",
             storageBucket: "lawkush-portfolio.firebasestorage.app",
             messagingSenderId: "682826833656",
-            appId: "1:682826833656:web:c500f3637e88cf0e89e50d",
-            measurementId: "G-KCP7095M4Q"
+            appId: "1:682826833656:web:c500f3637e88cf0e89e50d"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
         const storage = firebase.storage();
 
-        // Admin Email
         const ADMIN_EMAIL = "lawkusd660@gmail.com";
-
-        // Default Data with your image
-        const defaultData = {
-            profile: {
-                image: "https://firebasestorage.googleapis.com/v0/b/lawkush-portfolio.appspot.com/o/profile.jpg?alt=media",
-                name: "Lawkush Kumar",
-                tagline: "Creative Developer & Digital Creator"
-            },
-            social: [
-                { id: "1", name: "Instagram", platform: "instagram", url: "https://linktw.in/wwGPOt", icon: "📸" },
-                { id: "2", name: "Twitter", platform: "twitter", url: "https://linktw.in/eAshoa", icon: "🐦" },
-                { id: "3", name: "Telegram", platform: "telegram", url: "https://linktw.in/rtDjXG", icon: "✈️" },
-                { id: "4", name: "Facebook", platform: "facebook", url: "https://linktw.in/JJBWor", icon: "📘" }
-            ],
-            products: [
-                { id: "1", title: "Digital Marketing Course", description: "Complete guide to digital marketing", price: 999, image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400" },
-                { id: "2", title: "Web Development Kit", description: "Premium templates and components", price: 1499, image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400" }
-            ],
-            blogs: [
-                { id: "1", title: "Getting Started with Web Development", excerpt: "Learn the basics...", content: "Full content here...", date: "2024-01-15" },
-                { id: "2", title: "Digital Marketing Tips 2024", excerpt: "Top strategies...", content: "Full content here...", date: "2024-01-10" }
-            ]
-        };
-
         let currentUser = null;
         let isAdmin = false;
-        let currentEditType = null;
-        let currentEditId = null;
-        let tempImageFile = null;
+        let authMode = 'login';
+        let editingType = null;
+        let editingId = null;
+        let tempImage = null;
+
+        // Default Data
+        const defaultData = {
+            profile: {
+                name: "Lawkush Kumar",
+                tagline: "Creative Developer & Digital Creator",
+                image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400"
+            },
+            social: [
+                { id: "1", name: "Instagram", platform: "instagram", url: "https://instagram.com/lawkush", icon: "fab fa-instagram", color: "#e1306c" },
+                { id: "2", name: "Twitter", platform: "twitter", url: "https://twitter.com/lawkush", icon: "fab fa-twitter", color: "#1da1f2" },
+                { id: "3", name: "LinkedIn", platform: "linkedin", url: "https://linkedin.com/in/lawkush", icon: "fab fa-linkedin", color: "#0077b5" },
+                { id: "4", name: "GitHub", platform: "github", url: "https://github.com/lnkkumar62", icon: "fab fa-github", color: "#333" }
+            ],
+            products: [
+                { id: "1", title: "Complete Web Development Course", description: "Learn HTML, CSS, JS, React & Node.js from scratch", price: 1999, image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400" },
+                { id: "2", title: "Digital Marketing Mastery", description: "SEO, Social Media, Ads & Analytics complete guide", price: 1499, image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400" },
+                { id: "3", title: "UI/UX Design Pro", description: "Figma, Adobe XD & Design Systems mastery", price: 2499, image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400" }
+            ],
+            blogs: [
+                { id: "1", title: "How to Learn Web Development in 2024", excerpt: "Complete roadmap from beginner to professional developer...", content: "Full content here", date: "2024-01-15" },
+                { id: "2", title: "Digital Marketing Strategies That Work", excerpt: "Proven techniques to grow your online presence...", content: "Full content here", date: "2024-01-10" }
+            ]
+        };
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             auth.onAuthStateChanged(user => {
                 currentUser = user;
-                if (user) {
-                    isAdmin = user.email === ADMIN_EMAIL;
-                    updateUIForUser(user);
-                } else {
-                    updateUIForGuest();
-                }
+                isAdmin = user && user.email === ADMIN_EMAIL;
+                updateUI();
             });
             
-            loadDataFromFirebase();
-            setupScrollReveal();
+            loadData();
+            
+            // Navbar scroll effect
+            window.addEventListener('scroll', () => {
+                document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+            });
         });
 
-        // Load Data from Firebase
-        async function loadDataFromFirebase() {
+        async function loadData() {
             showLoading(true);
             try {
-                const doc = await db.collection('website').doc('data').get();
-                if (doc.exists) {
-                    const data = doc.data();
-                    renderAll(data);
-                } else {
-                    // First time - set default data
-                    await db.collection('website').doc('data').set(defaultData);
-                    renderAll(defaultData);
-                }
-            } catch (error) {
-                console.error("Error loading data:", error);
+                const doc = await db.collection('site').doc('data').get();
+                const data = doc.exists ? doc.data() : defaultData;
+                if (!doc.exists) await db.collection('site').doc('data').set(defaultData);
+                renderAll(data);
+            } catch (e) {
+                console.error(e);
                 renderAll(defaultData);
             }
             showLoading(false);
         }
 
-        // Render All
         function renderAll(data) {
-            renderProfile(data.profile);
-            renderSocial(data.social);
-            renderProducts(data.products);
-            renderBlogs(data.blogs);
-            renderAdminLists(data);
-        }
+            // Profile
+            document.getElementById('profileImage').src = data.profile.image;
+            document.getElementById('heroTagline').textContent = data.profile.tagline;
+            document.getElementById('adminName').value = data.profile.name;
+            document.getElementById('adminTagline').value = data.profile.tagline;
 
-        function renderProfile(profile) {
-            const img = document.getElementById('heroImage');
-            img.src = profile.image;
-            img.onerror = () => {
-                img.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="250" height="250"><rect fill="%231a1a2e" width="250" height="250"/><text fill="%23666" x="50%" y="50%" text-anchor="middle" dy=".3em">No Image</text></svg>';
-            };
-            document.getElementById('heroName').textContent = profile.name;
-            document.getElementById('heroTagline').textContent = profile.tagline;
-            
-            // Update admin fields
-            document.getElementById('adminHeroName').value = profile.name;
-            document.getElementById('adminHeroTagline').value = profile.tagline;
-        }
-
-        function renderSocial(social) {
-            const grid = document.getElementById('socialGrid');
-            grid.innerHTML = social.map(s => `
-                <a href="${s.url}" target="_blank" class="social-card ${s.platform} reveal">
-                    <div class="social-icon">${s.icon}</div>
-                    <div class="social-name">${s.name}</div>
-                    <div class="social-link">${s.url.replace('https://', '')}</div>
-                </a>
+            // Social
+            document.getElementById('socialGrid').innerHTML = data.social.map(s => `
+                <div class="social-card" onclick="window.open('${s.url}', '_blank')" style="border-color: ${s.color}30;">
+                    <i class="${s.icon} social-icon" style="color: ${s.color};"></i>
+                    <h3>${s.name}</h3>
+                    <p>${s.url.replace('https://', '')}</p>
+                </div>
             `).join('');
-            setupScrollReveal();
-        }
 
-        function renderProducts(products) {
-            const grid = document.getElementById('productsGrid');
-            grid.innerHTML = products.map(p => `
-                <div class="product-card reveal">
-                    <img src="${p.image}" class="product-image" onerror="this.src='https://via.placeholder.com/400x250/1a1a2e/666?text=No+Image'">
+            // Products
+            document.getElementById('productsGrid').innerHTML = data.products.map(p => `
+                <div class="product-card">
+                    <img src="${p.image}" class="product-image" onerror="this.src='https://via.placeholder.com/400x220'">
                     <div class="product-info">
-                        <h3 class="product-title">${p.title}</h3>
-                        <p class="product-description">${p.description}</p>
+                        <h3>${p.title}</h3>
+                        <p>${p.description}</p>
                         <div class="product-price">₹${p.price}</div>
-                        <button class="buy-btn" onclick="buyProduct('${p.id}')">Buy Now</button>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="buyProduct('${p.id}', '${p.title}', ${p.price})">Buy Now</button>
                     </div>
                 </div>
             `).join('');
-            setupScrollReveal();
-        }
 
-        function renderBlogs(blogs) {
-            const grid = document.getElementById('blogGrid');
-            grid.innerHTML = blogs.map(b => `
-                <div class="blog-card reveal" onclick="openBlogDetail('${b.id}')">
-                    <div class="blog-date">${formatDate(b.date)}</div>
-                    <h3 class="blog-title">${b.title}</h3>
-                    <p class="blog-excerpt">${b.excerpt}</p>
+            // Blogs
+            document.getElementById('blogsGrid').innerHTML = data.blogs.map(b => `
+                <div class="blog-card" onclick="showBlog('${b.id}')">
+                    <div class="blog-date">${new Date(b.date).toLocaleDateString()}</div>
+                    <h3>${b.title}</h3>
+                    <p>${b.excerpt}</p>
                 </div>
             `).join('');
-            setupScrollReveal();
+
+            // Admin lists
+            renderAdminLists(data);
         }
 
         function renderAdminLists(data) {
             // Social
-            document.getElementById('socialList').innerHTML = data.social.map(s => `
+            document.getElementById('adminSocialList').innerHTML = data.social.map(s => `
                 <li>
-                    <span>${s.icon} ${s.name}</span>
+                    <span><i class="${s.icon}"></i> ${s.name}</span>
                     <div class="item-actions">
-                        <button class="edit-btn" onclick="editItem('social', '${s.id}')">Edit</button>
-                        <button class="delete-btn" onclick="deleteItem('social', '${s.id}')">Delete</button>
+                        <button class="btn-small btn-edit" onclick="editItem('social', '${s.id}')">Edit</button>
+                        <button class="btn-small btn-delete" onclick="deleteItem('social', '${s.id}')">Delete</button>
                     </div>
                 </li>
             `).join('');
 
             // Products
-            document.getElementById('productList').innerHTML = data.products.map(p => `
+            document.getElementById('adminProductList').innerHTML = data.products.map(p => `
                 <li>
                     <span>${p.title} - ₹${p.price}</span>
                     <div class="item-actions">
-                        <button class="edit-btn" onclick="editItem('product', '${p.id}')">Edit</button>
-                        <button class="delete-btn" onclick="deleteItem('product', '${p.id}')">Delete</button>
+                        <button class="btn-small btn-edit" onclick="editItem('product', '${p.id}')">Edit</button>
+                        <button class="btn-small btn-delete" onclick="deleteItem('product', '${p.id}')">Delete</button>
                     </div>
                 </li>
             `).join('');
 
             // Blogs
-            document.getElementById('blogList').innerHTML = data.blogs.map(b => `
+            document.getElementById('adminBlogList').innerHTML = data.blogs.map(b => `
                 <li>
                     <span>${b.title}</span>
                     <div class="item-actions">
-                        <button class="edit-btn" onclick="editItem('blog', '${b.id}')">Edit</button>
-                        <button class="delete-btn" onclick="deleteItem('blog', '${b.id}')">Delete</button>
+                        <button class="btn-small btn-edit" onclick="editItem('blog', '${b.id}')">Edit</button>
+                        <button class="btn-small btn-delete" onclick="deleteItem('blog', '${b.id}')">Delete</button>
                     </div>
                 </li>
             `).join('');
         }
 
         // Auth Functions
-        function openAuthModal(type) {
+        function openAuth(mode) {
+            authMode = mode;
+            document.getElementById('authTitle').textContent = mode === 'login' ? 'Login' : 'Sign Up';
+            document.getElementById('authSubmit').textContent = mode === 'login' ? 'Login' : 'Create Account';
+            document.getElementById('nameField').style.display = mode === 'login' ? 'none' : 'block';
+            document.getElementById('authSwitchText').textContent = mode === 'login' ? "Don't have an account?" : "Already have an account?";
+            document.getElementById('authSwitchLink').textContent = mode === 'login' ? 'Sign Up' : 'Login';
             document.getElementById('authModal').classList.add('active');
-            switchAuthTab(type);
         }
 
-        function closeAuthModal() {
-            document.getElementById('authModal').classList.remove('active');
+        function toggleAuthMode() {
+            openAuth(authMode === 'login' ? 'signup' : 'login');
         }
 
-        function switchAuthTab(type) {
-            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+        async function handleAuth(e) {
+            e.preventDefault();
+            showLoading(true);
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
             
-            event.target.classList.add('active');
-            document.getElementById(type + 'Form').classList.add('active');
-        }
-
-        async function handleLogin(e) {
-            e.preventDefault();
-            showLoading(true);
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-
             try {
-                await auth.signInWithEmailAndPassword(email, password);
-                closeAuthModal();
-                showToast('Login successful!');
-            } catch (error) {
-                showToast('Error: ' + error.message, true);
+                if (authMode === 'login') {
+                    await auth.signInWithEmailAndPassword(email, password);
+                    showToast('Welcome back!');
+                } else {
+                    const name = document.getElementById('authName').value;
+                    const result = await auth.createUserWithEmailAndPassword(email, password);
+                    await result.user.updateProfile({ displayName: name });
+                    showToast('Account created!');
+                }
+                closeModal('authModal');
+            } catch (err) {
+                showToast(err.message, true);
             }
             showLoading(false);
         }
 
-        async function handleSignup(e) {
-            e.preventDefault();
+        async function googleAuth() {
             showLoading(true);
-            const name = document.getElementById('signupName').value;
-            const email = document.getElementById('signupEmail').value;
-            const password = document.getElementById('signupPassword').value;
-
             try {
-                const result = await auth.createUserWithEmailAndPassword(email, password);
-                await result.user.updateProfile({ displayName: name });
-                closeAuthModal();
-                showToast('Account created successfully!');
-            } catch (error) {
-                showToast('Error: ' + error.message, true);
-            }
-            showLoading(false);
-        }
-
-        async function loginWithGoogle() {
-            showLoading(true);
-            const provider = new firebase.auth.GoogleAuthProvider();
-            try {
+                const provider = new firebase.auth.GoogleAuthProvider();
                 await auth.signInWithPopup(provider);
-                closeAuthModal();
-                showToast('Login successful!');
-            } catch (error) {
-                showToast('Error: ' + error.message, true);
+                showToast('Welcome!');
+                closeModal('authModal');
+            } catch (err) {
+                showToast(err.message, true);
             }
             showLoading(false);
         }
 
-        async function logout() {
-            await auth.signOut();
+        function logout() {
+            auth.signOut();
             showToast('Logged out');
         }
 
-        function updateUIForUser(user) {
-            document.getElementById('authButtons').style.display = 'none';
-            document.getElementById('userMenu').classList.add('active');
-            document.getElementById('userName').textContent = user.displayName || user.email;
-            document.getElementById('userAvatar').src = user.photoURL || 'https://via.placeholder.com/40';
-            
-            // If admin, show admin indicator
-            if (isAdmin) {
-                document.getElementById('userName').innerHTML += ' <span style="color: var(--neon-green);">[Admin]</span>';
+        function updateUI() {
+            if (currentUser) {
+                document.getElementById('authButtons').style.display = 'none';
+                document.getElementById('userInfo').classList.add('active');
+                document.getElementById('userName').textContent = currentUser.displayName || currentUser.email;
+                document.getElementById('userAvatar').src = currentUser.photoURL || 'https://via.placeholder.com/45';
+                if (isAdmin) {
+                    document.getElementById('userName').innerHTML += ' <span style="color: var(--accent); font-size: 0.75rem;">[ADMIN]</span>';
+                }
+            } else {
+                document.getElementById('authButtons').style.display = 'flex';
+                document.getElementById('userInfo').classList.remove('active');
             }
-        }
-
-        function updateUIForGuest() {
-            document.getElementById('authButtons').style.display = 'flex';
-            document.getElementById('userMenu').classList.remove('active');
-            closeAdmin();
         }
 
         // Admin Functions
         function toggleAdmin() {
-            if (isAdmin) {
-                document.getElementById('adminPanel').classList.toggle('active');
-                loadDataFromFirebase(); // Refresh data
-            } else {
+            if (!isAdmin) {
                 showToast('Admin access only', true);
+                return;
             }
+            document.getElementById('adminPanel').classList.toggle('active');
+            loadData();
         }
 
         function closeAdmin() {
             document.getElementById('adminPanel').classList.remove('active');
         }
 
-        function showAdminSection(section) {
+        function showAdminTab(tab) {
+            document.querySelectorAll('.admin-nav button').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.admin-nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('admin-' + section).classList.add('active');
             event.target.classList.add('active');
+            document.getElementById('admin-' + tab).classList.add('active');
         }
 
-        // Admin Edit Functions
-        async function updateProfileImage() {
-            if (!tempImageFile) {
-                showToast('Please select an image first', true);
-                return;
+        // Profile Update
+        function previewImage(input, previewId) {
+            const file = input.files[0];
+            if (file) {
+                tempImage = file;
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = document.getElementById(previewId);
+                    img.src = e.target.result;
+                    img.classList.add('active');
+                };
+                reader.readAsDataURL(file);
             }
+        }
 
+        async function updateProfile() {
+            if (!tempImage) return showToast('Select an image first', true);
             showLoading(true);
             try {
-                const storageRef = storage.ref('profile.jpg');
-                await storageRef.put(tempImageFile);
-                const url = await storageRef.getDownloadURL();
-                
-                await db.collection('website').doc('data').update({
-                    'profile.image': url
-                });
-                
-                tempImageFile = null;
+                const ref = storage.ref('profile.jpg');
+                await ref.put(tempImage);
+                const url = await ref.getDownloadURL();
+                await db.collection('site').doc('data').update({ 'profile.image': url });
+                tempImage = null;
                 document.getElementById('profilePreview').classList.remove('active');
-                showToast('Profile image updated!');
-                loadDataFromFirebase();
-            } catch (error) {
-                showToast('Error: ' + error.message, true);
+                showToast('Profile updated!');
+                loadData();
+            } catch (err) {
+                showToast(err.message, true);
             }
             showLoading(false);
         }
 
-        async function updateHeroText() {
-            const name = document.getElementById('adminHeroName').value;
-            const tagline = document.getElementById('adminHeroTagline').value;
-            
+        async function updateProfileInfo() {
+            const name = document.getElementById('adminName').value;
+            const tagline = document.getElementById('adminTagline').value;
             showLoading(true);
             try {
-                await db.collection('website').doc('data').update({
+                await db.collection('site').doc('data').update({
                     'profile.name': name,
                     'profile.tagline': tagline
                 });
-                showToast('Hero text updated!');
-                loadDataFromFirebase();
-            } catch (error) {
-                showToast('Error: ' + error.message, true);
+                showToast('Profile info updated!');
+                loadData();
+            } catch (err) {
+                showToast(err.message, true);
             }
             showLoading(false);
         }
 
+        // CRUD Operations
         function openAddModal(type) {
-            currentEditType = type;
-            currentEditId = null;
-            showEditModal(type, null);
-        }
-
-        function editItem(type, id) {
-            currentEditType = type;
-            currentEditId = id;
-            showEditModal(type, id);
-        }
-
-        async function deleteItem(type, id) {
-            if (!confirm('Are you sure?')) return;
-            
-            showLoading(true);
-            try {
-                const doc = await db.collection('website').doc('data').get();
-                const data = doc.data();
-                const arrayName = type + 's';
-                const updatedArray = data[arrayName].filter(item => item.id !== id);
-                
-                await db.collection('website').doc('data').update({
-                    [arrayName]: updatedArray
-                });
-                
-                showToast('Deleted successfully!');
-                loadDataFromFirebase();
-            } catch (error) {
-                showToast('Error: ' + error.message, true);
-            }
-            showLoading(false);
-        }
-
-        function showEditModal(type, id) {
-            const modal = document.getElementById('editModal');
-            const title = document.getElementById('editModalTitle');
-            const fields = document.getElementById('editFormFields');
-            
-            modal.classList.add('active');
+            editingType = type;
+            editingId = null;
+            const title = document.getElementById('editTitle');
+            const fields = document.getElementById('editFields');
             
             if (type === 'social') {
-                title.textContent = id ? 'Edit Social Link' : 'Add Social Link';
+                title.textContent = 'Add Social Link';
                 fields.innerHTML = `
-                    <div class="form-group">
-                        <label>Name</label>
-                        <input type="text" id="editName" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Platform</label>
-                        <select id="editPlatform">
-                            <option value="instagram">Instagram</option>
-                            <option value="twitter">Twitter</option>
-                            <option value="telegram">Telegram</option>
-                            <option value="facebook">Facebook</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>URL</label>
-                        <input type="url" id="editUrl" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Icon</label>
-                        <input type="text" id="editIcon" maxlength="2" required>
-                    </div>
+                    <div class="form-group"><label>Name</label><input type="text" id="editName" required></div>
+                    <div class="form-group"><label>Platform</label><select id="editPlatform">
+                        <option value="instagram">Instagram</option>
+                        <option value="twitter">Twitter</option>
+                        <option value="linkedin">LinkedIn</option>
+                        <option value="github">GitHub</option>
+                    </select></div>
+                    <div class="form-group"><label>URL</label><input type="url" id="editUrl" required></div>
                 `;
             } else if (type === 'product') {
-                title.textContent = id ? 'Edit Product' : 'Add Product';
+                title.textContent = 'Add Product';
                 fields.innerHTML = `
-                    <div class="form-group">
-                        <label>Title</label>
-                        <input type="text" id="editTitle" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Description</label>
-                        <textarea id="editDescription" rows="3" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Price (₹)</label>
-                        <input type="number" id="editPrice" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Image URL</label>
-                        <input type="url" id="editImage" required>
-                    </div>
+                    <div class="form-group"><label>Title</label><input type="text" id="editTitle2" required></div>
+                    <div class="form-group"><label>Description</label><textarea id="editDesc" rows="3" required></textarea></div>
+                    <div class="form-group"><label>Price (₹)</label><input type="number" id="editPrice" required></div>
+                    <div class="form-group"><label>Image URL</label><input type="url" id="editImg" required></div>
                 `;
             } else if (type === 'blog') {
-                title.textContent = id ? 'Edit Blog' : 'Add Blog';
+                title.textContent = 'Add Blog';
                 fields.innerHTML = `
-                    <div class="form-group">
-                        <label>Title</label>
-                        <input type="text" id="editBlogTitle" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Excerpt</label>
-                        <textarea id="editExcerpt" rows="2" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Content</label>
-                        <textarea id="editContent" rows="4" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Date</label>
-                        <input type="date" id="editDate" required>
-                    </div>
+                    <div class="form-group"><label>Title</label><input type="text" id="editBlogTitle" required></div>
+                    <div class="form-group"><label>Excerpt</label><textarea id="editExcerpt" rows="2" required></textarea></div>
+                    <div class="form-group"><label>Content</label><textarea id="editContent" rows="4" required></textarea></div>
+                    <div class="form-group"><label>Date</label><input type="date" id="editDate" required></div>
                 `;
             }
-
-            // Fill data if editing
-            if (id) {
-                fillEditForm(type, id);
-            }
+            document.getElementById('editModal').classList.add('active');
         }
 
-        async function fillEditForm(type, id) {
-            const doc = await db.collection('website').doc('data').get();
+        async function editItem(type, id) {
+            editingType = type;
+            editingId = id;
+            const doc = await db.collection('site').doc('data').get();
             const data = doc.data();
             const item = data[type + 's'].find(i => i.id === id);
+            
+            openAddModal(type);
+            document.getElementById('editTitle').textContent = 'Edit ' + type.charAt(0).toUpperCase() + type.slice(1);
             
             if (type === 'social') {
                 document.getElementById('editName').value = item.name;
                 document.getElementById('editPlatform').value = item.platform;
                 document.getElementById('editUrl').value = item.url;
-                document.getElementById('editIcon').value = item.icon;
             } else if (type === 'product') {
-                document.getElementById('editTitle').value = item.title;
-                document.getElementById('editDescription').value = item.description;
+                document.getElementById('editTitle2').value = item.title;
+                document.getElementById('editDesc').value = item.description;
                 document.getElementById('editPrice').value = item.price;
-                document.getElementById('editImage').value = item.image;
+                document.getElementById('editImg').value = item.image;
             } else if (type === 'blog') {
                 document.getElementById('editBlogTitle').value = item.title;
                 document.getElementById('editExcerpt').value = item.excerpt;
@@ -1917,36 +1414,53 @@
             }
         }
 
-        async function handleEditSubmit(e) {
+        async function deleteItem(type, id) {
+            if (!confirm('Delete this item?')) return;
+            showLoading(true);
+            try {
+                const doc = await db.collection('site').doc('data').get();
+                const data = doc.data();
+                const arr = data[type + 's'].filter(i => i.id !== id);
+                await db.collection('site').doc('data').update({ [type + 's']: arr });
+                showToast('Deleted!');
+                loadData();
+            } catch (err) {
+                showToast(err.message, true);
+            }
+            showLoading(false);
+        }
+
+        async function saveEdit(e) {
             e.preventDefault();
             showLoading(true);
-            
             try {
-                const doc = await db.collection('website').doc('data').get();
+                const doc = await db.collection('site').doc('data').get();
                 const data = doc.data();
-                const arrayName = currentEditType + 's';
-                let array = data[arrayName];
+                let item;
                 
-                let newItem;
-                if (currentEditType === 'social') {
-                    newItem = {
-                        id: currentEditId || Date.now().toString(),
+                if (editingType === 'social') {
+                    const platform = document.getElementById('editPlatform').value;
+                    const icons = { instagram: 'fab fa-instagram', twitter: 'fab fa-twitter', linkedin: 'fab fa-linkedin', github: 'fab fa-github' };
+                    const colors = { instagram: '#e1306c', twitter: '#1da1f2', linkedin: '#0077b5', github: '#333' };
+                    item = {
+                        id: editingId || Date.now().toString(),
                         name: document.getElementById('editName').value,
-                        platform: document.getElementById('editPlatform').value,
+                        platform: platform,
                         url: document.getElementById('editUrl').value,
-                        icon: document.getElementById('editIcon').value
+                        icon: icons[platform],
+                        color: colors[platform]
                     };
-                } else if (currentEditType === 'product') {
-                    newItem = {
-                        id: currentEditId || Date.now().toString(),
-                        title: document.getElementById('editTitle').value,
-                        description: document.getElementById('editDescription').value,
+                } else if (editingType === 'product') {
+                    item = {
+                        id: editingId || Date.now().toString(),
+                        title: document.getElementById('editTitle2').value,
+                        description: document.getElementById('editDesc').value,
                         price: parseInt(document.getElementById('editPrice').value),
-                        image: document.getElementById('editImage').value
+                        image: document.getElementById('editImg').value
                     };
-                } else if (currentEditType === 'blog') {
-                    newItem = {
-                        id: currentEditId || Date.now().toString(),
+                } else if (editingType === 'blog') {
+                    item = {
+                        id: editingId || Date.now().toString(),
                         title: document.getElementById('editBlogTitle').value,
                         excerpt: document.getElementById('editExcerpt').value,
                         content: document.getElementById('editContent').value,
@@ -1954,103 +1468,80 @@
                     };
                 }
                 
-                if (currentEditId) {
-                    const index = array.findIndex(i => i.id === currentEditId);
-                    array[index] = newItem;
+                const arr = data[editingType + 's'];
+                if (editingId) {
+                    const idx = arr.findIndex(i => i.id === editingId);
+                    arr[idx] = item;
                 } else {
-                    array.push(newItem);
+                    arr.push(item);
                 }
                 
-                await db.collection('website').doc('data').update({
-                    [arrayName]: array
-                });
-                
+                await db.collection('site').doc('data').update({ [editingType + 's']: arr });
                 closeModal('editModal');
-                showToast(currentEditId ? 'Updated!' : 'Added!');
-                loadDataFromFirebase();
-            } catch (error) {
-                showToast('Error: ' + error.message, true);
+                showToast(editingId ? 'Updated!' : 'Added!');
+                loadData();
+            } catch (err) {
+                showToast(err.message, true);
             }
             showLoading(false);
         }
 
-        // Utility Functions
-        function previewImage(input, previewId) {
-            const file = input.files[0];
-            if (file) {
-                tempImageFile = file;
-                const reader = new FileReader();
-                reader.onload = e => {
-                    const preview = document.getElementById(previewId);
-                    preview.src = e.target.result;
-                    preview.classList.add('active');
-                };
-                reader.readAsDataURL(file);
+        // Payment
+        function buyProduct(id, title, price) {
+            if (!currentUser) {
+                showToast('Please login to buy', true);
+                return openAuth('login');
             }
-        }
-
-        function openBlogDetail(id) {
-            db.collection('website').doc('data').get().then(doc => {
-                const blog = doc.data().blogs.find(b => b.id === id);
-                document.getElementById('blogDetailTitle').textContent = blog.title;
-                document.getElementById('blogDetailDate').textContent = formatDate(blog.date);
-                document.getElementById('blogDetailContent').textContent = blog.content;
-                document.getElementById('mainContent').classList.add('hidden');
-                document.getElementById('blogDetail').classList.add('active');
-                window.scrollTo(0, 0);
+            
+            const options = {
+                key: "rzp_live_SEGuGj5eSI4ElC",
+                amount: price * 100,
+                currency: "INR",
+                name: "Lawkush Kumar",
+                description: title,
+                image: "https://your-logo.png",
+                handler: function(response) {
+                    showToast('Payment Successful! ID: ' + response.razorpay_payment_id);
+                },
+                prefill: {
+                    name: currentUser.displayName || "",
+                    email: currentUser.email || ""
+                },
+                theme: { color: "#00f3ff" }
+            };
+            
+            const rzp = new Razorpay(options);
+            rzp.open();
+            
+            rzp.on('payment.failed', function(response) {
+                showToast('Payment Failed: ' + response.error.description, true);
             });
         }
 
-        function closeBlogDetail() {
-            document.getElementById('blogDetail').classList.remove('active');
-            document.getElementById('mainContent').classList.remove('hidden');
+        function showBlog(id) {
+            // Implement blog detail view
+            showToast('Blog detail coming soon');
         }
 
-        function buyProduct(id) {
-            if (!currentUser) {
-                openAuthModal('login');
-                showToast('Please login to buy', true);
-                return;
-            }
-            // Razorpay integration here
-            showToast('Payment gateway coming soon!');
-        }
-
-        function formatDate(dateStr) {
-            return new Date(dateStr).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        // Utilities
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
         }
 
         function showLoading(show) {
             document.getElementById('loading').classList.toggle('active', show);
         }
 
-        function showToast(message, isError = false) {
+        function showToast(msg, error = false) {
             const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = isError ? 'toast error show' : 'toast show';
+            toast.textContent = msg;
+            toast.className = 'toast ' + (error ? 'error' : '') + ' show';
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('active');
-        }
-
-        function setupScrollReveal() {
-            const observer = new IntersectionObserver(entries => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) entry.target.classList.add('active');
-                });
-            }, { threshold: 0.1 });
-            
-            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-        }
-
-        // Close modals on outside click
-        window.onclick = function(e) {
-            if (e.target.classList.contains('auth-modal') || e.target.classList.contains('modal')) {
-                e.target.classList.remove('active');
-            }
-        }
+        window.onclick = e => {
+            if (e.target.classList.contains('modal')) e.target.classList.remove('active');
+        };
     </script>
 </body>
 </html>
