@@ -1,244 +1,2056 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <title>User + Admin Login System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lawkush Kumar - Portfolio</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  <style>
-    body {
-      margin: 0;
-      background: black;
-      font-family: Arial;
-      color: white;
-      text-align: center;
-    }
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-pink: #ff00ff;
+            --neon-purple: #bf00ff;
+            --neon-green: #00ff88;
+            --dark-bg: #0a0a0a;
+        }
 
-    .neon-box {
-      width: 420px;
-      margin: 60px auto;
-      padding: 35px;
-      border-radius: 20px;
-      border: 2px solid cyan;
-      box-shadow: 0 0 25px cyan;
-      background: rgba(0,0,0,0.9);
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--dark-bg);
+            color: white;
+            overflow-x: hidden;
+        }
 
-    h2 {
-      text-shadow: 0 0 12px cyan;
-      margin-bottom: 20px;
-    }
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(45deg, #0a0a0a, #1a0033, #0a0a0a, #001a33);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
 
-    input {
-      width: 90%;
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 12px;
-      border: none;
-      outline: none;
-      font-size: 15px;
-    }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
-    button {
-      padding: 12px 18px;
-      margin: 10px 5px;
-      border-radius: 12px;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.3s;
-    }
+        .floating-shapes {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
 
-    button:hover {
-      box-shadow: 0 0 15px cyan;
-      transform: scale(1.05);
-    }
+        .shape {
+            position: absolute;
+            filter: blur(50px);
+            opacity: 0.5;
+            animation: float 20s infinite;
+        }
 
-    .btn-main {
-      background: cyan;
-      color: black;
-    }
+        .shape:nth-child(1) {
+            width: 300px;
+            height: 300px;
+            background: var(--neon-purple);
+            border-radius: 50%;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
 
-    .btn-google {
-      background: white;
-      width: 90%;
-      margin-top: 15px;
-    }
+        .shape:nth-child(2) {
+            width: 200px;
+            height: 200px;
+            background: var(--neon-blue);
+            border-radius: 50%;
+            top: 60%;
+            right: 10%;
+            animation-delay: 5s;
+        }
 
-    #adminPanel {
-      display: none;
-      margin-top: 30px;
-    }
+        .shape:nth-child(3) {
+            width: 250px;
+            height: 250px;
+            background: var(--neon-pink);
+            border-radius: 50%;
+            bottom: 10%;
+            left: 30%;
+            animation-delay: 10s;
+        }
 
-    #status {
-      margin-top: 15px;
-      color: lime;
-      font-weight: bold;
-    }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
 
-    #error {
-      margin-top: 10px;
-      color: red;
-      font-weight: bold;
-    }
-  </style>
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        .btn-login {
+            background: transparent;
+            border: 2px solid var(--neon-blue);
+            color: var(--neon-blue);
+        }
+
+        .btn-login:hover {
+            background: var(--neon-blue);
+            color: black;
+            box-shadow: 0 0 20px var(--neon-blue);
+        }
+
+        .btn-signup {
+            background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink));
+            color: white;
+        }
+
+        .btn-signup:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(191, 0, 255, 0.5);
+        }
+
+        .user-menu {
+            display: none;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-menu.active {
+            display: flex;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--neon-blue);
+            cursor: pointer;
+        }
+
+        .logout-btn {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid rgba(255, 0, 0, 0.5);
+            color: #ff4444;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 0, 0, 0.3);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 100px 20px 20px;
+        }
+
+        .circle-container {
+            position: relative;
+            width: 350px;
+            height: 350px;
+            margin-bottom: 50px;
+        }
+
+        .rotating-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid transparent;
+            border-top: 3px solid var(--neon-blue);
+            border-radius: 50%;
+            animation: rotate 10s linear infinite;
+        }
+
+        .rotating-ring:nth-child(2) {
+            width: 90%;
+            height: 90%;
+            top: 5%;
+            left: 5%;
+            border-top: 3px solid var(--neon-pink);
+            animation: rotate 15s linear infinite reverse;
+        }
+
+        .rotating-ring:nth-child(3) {
+            width: 80%;
+            height: 80%;
+            top: 10%;
+            left: 10%;
+            border-top: 3px solid var(--neon-green);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .profile-image {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 50px rgba(0, 243, 255, 0.5);
+            transition: all 0.5s ease;
+            background: #1a1a2e;
+        }
+
+        .profile-image:hover {
+            transform: translate(-50%, -50%) scale(1.05);
+            box-shadow: 0 0 80px rgba(0, 243, 255, 0.8);
+        }
+
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-text {
+            text-align: center;
+            z-index: 1;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 20px var(--neon-blue)); }
+            to { filter: drop-shadow(0 0 30px var(--neon-pink)); }
+        }
+
+        .hero-text p {
+            font-size: 1.3rem;
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            animation: bounce 2s infinite;
+            cursor: pointer;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+
+        .scroll-indicator span {
+            display: block;
+            width: 30px;
+            height: 50px;
+            border: 2px solid var(--neon-blue);
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .scroll-indicator span::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--neon-blue);
+            border-radius: 50%;
+            animation: scroll 2s infinite;
+        }
+
+        @keyframes scroll {
+            0% { opacity: 1; top: 10px; }
+            100% { opacity: 0; top: 30px; }
+        }
+
+        /* Social Media Section */
+        .social-section {
+            min-height: 100vh;
+            padding: 100px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink));
+            border-radius: 2px;
+        }
+
+        .social-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .social-card {
+            position: relative;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-decoration: none;
+            color: white;
+            display: block;
+        }
+
+        .social-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .social-card:hover::before {
+            left: 100%;
+        }
+
+        .social-card.instagram {
+            box-shadow: 0 0 20px rgba(225, 48, 108, 0.3);
+            border-color: rgba(225, 48, 108, 0.5);
+        }
+
+        .social-card.instagram:hover {
+            box-shadow: 0 0 40px rgba(225, 48, 108, 0.6), inset 0 0 20px rgba(225, 48, 108, 0.1);
+            transform: translateY(-10px) scale(1.02);
+            border-color: #e1306c;
+        }
+
+        .social-card.twitter {
+            box-shadow: 0 0 20px rgba(29, 161, 242, 0.3);
+            border-color: rgba(29, 161, 242, 0.5);
+        }
+
+        .social-card.twitter:hover {
+            box-shadow: 0 0 40px rgba(29, 161, 242, 0.6), inset 0 0 20px rgba(29, 161, 242, 0.1);
+            transform: translateY(-10px) scale(1.02);
+            border-color: #1da1f2;
+        }
+
+        .social-card.telegram {
+            box-shadow: 0 0 20px rgba(0, 136, 204, 0.3);
+            border-color: rgba(0, 136, 204, 0.5);
+        }
+
+        .social-card.telegram:hover {
+            box-shadow: 0 0 40px rgba(0, 136, 204, 0.6), inset 0 0 20px rgba(0, 136, 204, 0.1);
+            transform: translateY(-10px) scale(1.02);
+            border-color: #0088cc;
+        }
+
+        .social-card.facebook {
+            box-shadow: 0 0 20px rgba(66, 103, 178, 0.3);
+            border-color: rgba(66, 103, 178, 0.5);
+        }
+
+        .social-card.facebook:hover {
+            box-shadow: 0 0 40px rgba(66, 103, 178, 0.6), inset 0 0 20px rgba(66, 103, 178, 0.1);
+            transform: translateY(-10px) scale(1.02);
+            border-color: #4267B2;
+        }
+
+        .social-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .social-card.instagram .social-icon { color: #e1306c; }
+        .social-card.twitter .social-icon { color: #1da1f2; }
+        .social-card.telegram .social-icon { color: #0088cc; }
+        .social-card.facebook .social-icon { color: #4267B2; }
+
+        .social-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .social-link {
+            color: #aaa;
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+
+        /* Products Section */
+        .products-section {
+            min-height: 100vh;
+            padding: 100px 20px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .product-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            border-color: var(--neon-blue);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 25px;
+        }
+
+        .product-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: var(--neon-blue);
+        }
+
+        .product-description {
+            color: #aaa;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            color: var(--neon-green);
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .buy-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink));
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .buy-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(191, 0, 255, 0.5);
+        }
+
+        /* Blog Section */
+        .blog-section {
+            min-height: 100vh;
+            padding: 100px 20px;
+        }
+
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .blog-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-green);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.1);
+        }
+
+        .blog-date {
+            color: var(--neon-pink);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .blog-title {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .blog-excerpt {
+            color: #aaa;
+            line-height: 1.6;
+        }
+
+        /* Blog Detail Page */
+        .blog-detail {
+            display: none;
+            min-height: 100vh;
+            padding: 100px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .blog-detail.active {
+            display: block;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 30px;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-5px);
+        }
+
+        .blog-detail-content {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .blog-detail h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .blog-detail .date {
+            color: var(--neon-pink);
+            margin-bottom: 30px;
+            display: block;
+        }
+
+        .blog-detail .content {
+            line-height: 1.8;
+            color: #ddd;
+            font-size: 1.1rem;
+        }
+
+        /* Auth Modal */
+        .auth-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .auth-modal.active {
+            display: flex;
+        }
+
+        .auth-container {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 50px rgba(0, 243, 255, 0.2);
+            position: relative;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .auth-tab {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            color: #aaa;
+            cursor: pointer;
+            font-size: 1rem;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .auth-tab.active {
+            color: var(--neon-blue);
+        }
+
+        .auth-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--neon-blue);
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 243, 255, 0.4);
+        }
+
+        .google-btn {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .google-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--neon-blue);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            color: #666;
+            position: relative;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 45%;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
+
+        /* Admin Panel */
+        .admin-panel {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--dark-bg);
+            z-index: 3000;
+            overflow-y: auto;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .admin-header {
+            background: linear-gradient(90deg, #1a1a2e, #16213e);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .admin-title {
+            font-size: 1.5rem;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            flex-wrap: wrap;
+        }
+
+        .admin-nav-btn {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .admin-nav-btn.active,
+        .admin-nav-btn:hover {
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+            border-color: transparent;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+        }
+
+        .admin-content {
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .admin-section {
+            display: none;
+        }
+
+        .admin-section.active {
+            display: block;
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .admin-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-card h3 {
+            margin-bottom: 20px;
+            color: var(--neon-blue);
+            font-size: 1.2rem;
+        }
+
+        .item-list {
+            list-style: none;
+        }
+
+        .item-list li {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 5px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+
+        .edit-btn {
+            background: rgba(0, 243, 255, 0.2);
+            color: var(--neon-blue);
+        }
+
+        .delete-btn {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff4444;
+        }
+
+        .edit-btn:hover {
+            background: rgba(0, 243, 255, 0.3);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+        }
+
+        .delete-btn:hover {
+            background: rgba(255, 0, 0, 0.3);
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+        }
+
+        .add-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            background: linear-gradient(45deg, var(--neon-green), var(--neon-blue));
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 4000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 50px rgba(0, 243, 255, 0.2);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(90deg);
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            text-align: center;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #aaa;
+        }
+
+        .file-input-label:hover {
+            border-color: var(--neon-blue);
+            color: var(--neon-blue);
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 10px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .preview-image.active {
+            display: block;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: linear-gradient(45deg, var(--neon-green), var(--neon-blue));
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 5000;
+            font-weight: bold;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.error {
+            background: linear-gradient(45deg, #ff4444, #ff8800);
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 6000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .loading.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid var(--neon-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading p {
+            margin-top: 20px;
+            color: var(--neon-blue);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 15px 20px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero-text h1 {
+                font-size: 2rem;
+            }
+
+            .circle-container {
+                width: 280px;
+                height: 280px;
+            }
+
+            .profile-image {
+                width: 200px;
+                height: 200px;
+            }
+
+            .social-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .auth-container {
+                padding: 30px 20px;
+            }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .main-content {
+            display: block;
+        }
+
+        .main-content.hidden {
+            display: none;
+        }
+    </style>
 </head>
-
 <body>
+    <!-- Background -->
+    <div class="bg-animation"></div>
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
 
-  <!-- LOGIN BOX -->
-  <div class="neon-box">
-    <h2>👤 User Login</h2>
+    <!-- Loading -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
 
-    <input id="email" placeholder="Enter Email">
-    <input id="password" type="password" placeholder="Enter Password">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">Lawkush Kumar</div>
+        <div class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#social">Social</a>
+            <a href="#products">Products</a>
+            <a href="#blogs">Blogs</a>
+        </div>
+        <div class="auth-buttons" id="authButtons">
+            <button class="btn btn-login" onclick="openAuthModal('login')">Login</button>
+            <button class="btn btn-signup" onclick="openAuthModal('signup')">Sign Up</button>
+        </div>
+        <div class="user-menu" id="userMenu">
+            <span id="userName"></span>
+            <img src="" alt="User" class="user-avatar" id="userAvatar" onclick="toggleAdmin()">
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </nav>
 
-    <button class="btn-main" onclick="loginUser()">Login</button>
-    <button class="btn-main" onclick="signupUser()">Signup</button>
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Hero -->
+        <section class="hero" id="home">
+            <div class="circle-container">
+                <div class="rotating-ring"></div>
+                <div class="rotating-ring"></div>
+                <div class="rotating-ring"></div>
+                <div class="profile-image">
+                    <img src="" alt="Lawkush Kumar" id="heroImage">
+                </div>
+            </div>
+            <div class="hero-text">
+                <h1 id="heroName">Lawkush Kumar</h1>
+                <p id="heroTagline">Creative Developer & Digital Creator</p>
+            </div>
+            <div class="scroll-indicator" onclick="document.getElementById('social').scrollIntoView({behavior: 'smooth'})">
+                <span></span>
+            </div>
+        </section>
 
-    <button class="btn-google" onclick="googleLogin()">
-      Login with Google
-    </button>
+        <!-- Social -->
+        <section class="social-section" id="social">
+            <h2 class="section-title reveal">Connect With Me</h2>
+            <div class="social-grid" id="socialGrid"></div>
+        </section>
 
-    <p id="status"></p>
-    <p id="error"></p>
+        <!-- Products -->
+        <section class="products-section" id="products">
+            <h2 class="section-title reveal">My Products</h2>
+            <div class="products-grid" id="productsGrid"></div>
+        </section>
 
-    <button onclick="logoutUser()">Logout</button>
-  </div>
+        <!-- Blogs -->
+        <section class="blog-section" id="blogs">
+            <h2 class="section-title reveal">Latest Blogs</h2>
+            <div class="blog-grid" id="blogGrid"></div>
+        </section>
+    </div>
 
-  <!-- ADMIN PANEL -->
-  <div class="neon-box" id="adminPanel">
-    <h2>🔐 Admin Dashboard</h2>
+    <!-- Blog Detail -->
+    <div class="blog-detail" id="blogDetail">
+        <button class="back-btn" onclick="closeBlogDetail()">← Back to Blogs</button>
+        <article class="blog-detail-content">
+            <h1 id="blogDetailTitle"></h1>
+            <span class="date" id="blogDetailDate"></span>
+            <div class="content" id="blogDetailContent"></div>
+        </article>
+    </div>
 
-    <input id="editName" placeholder="Update Name">
-    <input id="editTag" placeholder="Update Tagline">
+    <!-- Auth Modal -->
+    <div class="auth-modal" id="authModal">
+        <div class="auth-container">
+            <button class="close-btn" onclick="closeAuthModal()">×</button>
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchAuthTab('login')">Login</button>
+                <button class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</button>
+            </div>
+            
+            <!-- Login Form -->
+            <form class="auth-form active" id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" required placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" required placeholder="Enter your password">
+                </div>
+                <button type="submit" class="submit-btn">Login</button>
+                
+                <div class="divider">OR</div>
+                
+                <button type="button" class="google-btn" onclick="loginWithGoogle()">
+                    <span>🔍</span> Login with Google
+                </button>
+            </form>
 
-    <button class="btn-main" onclick="saveProfile()">
-      Save Profile
-    </button>
-  </div>
+            <!-- Signup Form -->
+            <form class="auth-form" id="signupForm" onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="signupName" required placeholder="Enter your name">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="signupEmail" required placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="signupPassword" required placeholder="Create password (min 6 chars)">
+                </div>
+                <button type="submit" class="submit-btn">Sign Up</button>
+                
+                <div class="divider">OR</div>
+                
+                <button type="button" class="google-btn" onclick="loginWithGoogle()">
+                    <span>🔍</span> Sign up with Google
+                </button>
+            </form>
+        </div>
+    </div>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    <!-- Admin Panel -->
+    <div class="admin-panel" id="adminPanel">
+        <div class="admin-header">
+            <h1 class="admin-title">🔐 Admin Dashboard</h1>
+            <button class="logout-btn" onclick="closeAdmin()">Close Panel</button>
+        </div>
+        <div class="admin-nav">
+            <button class="admin-nav-btn active" onclick="showAdminSection('profile')">Profile</button>
+            <button class="admin-nav-btn" onclick="showAdminSection('social')">Social Links</button>
+            <button class="admin-nav-btn" onclick="showAdminSection('products')">Products</button>
+            <button class="admin-nav-btn" onclick="showAdminSection('blogs')">Blogs</button>
+        </div>
+        <div class="admin-content">
+            <!-- Profile -->
+            <div class="admin-section active" id="admin-profile">
+                <div class="admin-grid">
+                    <div class="admin-card">
+                        <h3>🖼️ Profile Image</h3>
+                        <div class="form-group">
+                            <div class="file-input-wrapper">
+                                <input type="file" id="profileImageInput" accept="image/*" onchange="previewImage(this, 'profilePreview')">
+                                <label for="profileImageInput" class="file-input-label">Click to select new image</label>
+                            </div>
+                            <img id="profilePreview" class="preview-image">
+                        </div>
+                        <button class="add-btn" onclick="updateProfileImage()">Update Image</button>
+                    </div>
+                    <div class="admin-card">
+                        <h3>📝 Hero Text</h3>
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" id="adminHeroName">
+                        </div>
+                        <div class="form-group">
+                            <label>Tagline</label>
+                            <input type="text" id="adminHeroTagline">
+                        </div>
+                        <button class="add-btn" onclick="updateHeroText()">Update Text</button>
+                    </div>
+                </div>
+            </div>
 
-  import {
-    getAuth,
-    GoogleAuthProvider,
-    signInWithPopup,
-    signInWithEmailAndPassword,
-    createUserWithEmailAndPassword,
-    signOut,
-    onAuthStateChanged
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+            <!-- Social -->
+            <div class="admin-section" id="admin-social">
+                <div class="admin-card">
+                    <h3>🔗 Social Links</h3>
+                    <ul class="item-list" id="socialList"></ul>
+                    <button class="add-btn" onclick="openAddModal('social')">Add New</button>
+                </div>
+            </div>
 
-  import {
-    getFirestore,
-    doc,
-    setDoc
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+            <!-- Products -->
+            <div class="admin-section" id="admin-products">
+                <div class="admin-card">
+                    <h3>🛍️ Products</h3>
+                    <ul class="item-list" id="productList"></ul>
+                    <button class="add-btn" onclick="openAddModal('product')">Add New</button>
+                </div>
+            </div>
 
-  // ✅ Firebase Config
-  const firebaseConfig = {
-    apiKey: "AIzaSyBgjSRBDfaL0FAb7_Tjb3vKpBw1qqevDyw",
-    authDomain: "lawkush-portfolio.firebaseapp.com",
-    projectId: "lawkush-portfolio",
-    storageBucket: "lawkush-portfolio.firebasestorage.app",
-    messagingSenderId: "682826833656",
-    appId: "1:682826833656:web:c500f3637e88cf0e89e50d"
-  };
+            <!-- Blogs -->
+            <div class="admin-section" id="admin-blogs">
+                <div class="admin-card">
+                    <h3>📝 Blogs</h3>
+                    <ul class="item-list" id="blogList"></ul>
+                    <button class="add-btn" onclick="openAddModal('blog')">Add New</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+    <!-- Edit Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('editModal')">×</button>
+            <h2 class="modal-title" id="editModalTitle">Add/Edit</h2>
+            <form id="editForm" onsubmit="handleEditSubmit(event)">
+                <div id="editFormFields"></div>
+                <button type="submit" class="submit-btn">Save</button>
+            </form>
+        </div>
+    </div>
 
-  // ✅ Admin Email Detect
-  const ADMIN_EMAIL = "lawkusd660@gmail.com";
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
 
-  // Show Messages
-  function showMsg(msg) {
-    document.getElementById("status").innerText = msg;
-    document.getElementById("error").innerText = "";
-  }
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBgjSRBDfaL0FAb7_Tjb3vKpBw1qqevDyw",
+            authDomain: "lawkush-portfolio.firebaseapp.com",
+            projectId: "lawkush-portfolio",
+            storageBucket: "lawkush-portfolio.firebasestorage.app",
+            messagingSenderId: "682826833656",
+            appId: "1:682826833656:web:c500f3637e88cf0e89e50d",
+            measurementId: "G-KCP7095M4Q"
+        };
 
-  function showError(msg) {
-    document.getElementById("error").innerText = msg;
-    document.getElementById("status").innerText = "";
-  }
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
 
-  // Auto Detect Admin/User
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      if (user.email === ADMIN_EMAIL) {
-        document.getElementById("adminPanel").style.display = "block";
-        showMsg("🔥 Admin Logged In Successfully!");
-      } else {
-        document.getElementById("adminPanel").style.display = "none";
-        showMsg("✅ User Logged In Successfully!");
-      }
-    } else {
-      document.getElementById("adminPanel").style.display = "none";
-    }
-  });
+        // Admin Email
+        const ADMIN_EMAIL = "lawkusd660@gmail.com";
 
-  // LOGIN
-  window.loginUser = async function () {
-    try {
-      const email = document.getElementById("email").value;
-      const pass = document.getElementById("password").value;
+        // Default Data with your image
+        const defaultData = {
+            profile: {
+                image: "https://firebasestorage.googleapis.com/v0/b/lawkush-portfolio.appspot.com/o/profile.jpg?alt=media",
+                name: "Lawkush Kumar",
+                tagline: "Creative Developer & Digital Creator"
+            },
+            social: [
+                { id: "1", name: "Instagram", platform: "instagram", url: "https://linktw.in/wwGPOt", icon: "📸" },
+                { id: "2", name: "Twitter", platform: "twitter", url: "https://linktw.in/eAshoa", icon: "🐦" },
+                { id: "3", name: "Telegram", platform: "telegram", url: "https://linktw.in/rtDjXG", icon: "✈️" },
+                { id: "4", name: "Facebook", platform: "facebook", url: "https://linktw.in/JJBWor", icon: "📘" }
+            ],
+            products: [
+                { id: "1", title: "Digital Marketing Course", description: "Complete guide to digital marketing", price: 999, image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400" },
+                { id: "2", title: "Web Development Kit", description: "Premium templates and components", price: 1499, image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400" }
+            ],
+            blogs: [
+                { id: "1", title: "Getting Started with Web Development", excerpt: "Learn the basics...", content: "Full content here...", date: "2024-01-15" },
+                { id: "2", title: "Digital Marketing Tips 2024", excerpt: "Top strategies...", content: "Full content here...", date: "2024-01-10" }
+            ]
+        };
 
-      await signInWithEmailAndPassword(auth, email, pass);
-      showMsg("✅ Login Successful!");
-    } catch (err) {
-      showError("❌ Login Failed: " + err.message);
-    }
-  };
+        let currentUser = null;
+        let isAdmin = false;
+        let currentEditType = null;
+        let currentEditId = null;
+        let tempImageFile = null;
 
-  // SIGNUP
-  window.signupUser = async function () {
-    try {
-      const email = document.getElementById("email").value;
-      const pass = document.getElementById("password").value;
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            auth.onAuthStateChanged(user => {
+                currentUser = user;
+                if (user) {
+                    isAdmin = user.email === ADMIN_EMAIL;
+                    updateUIForUser(user);
+                } else {
+                    updateUIForGuest();
+                }
+            });
+            
+            loadDataFromFirebase();
+            setupScrollReveal();
+        });
 
-      await createUserWithEmailAndPassword(auth, email, pass);
-      showMsg("✅ Signup Successful!");
-    } catch (err) {
-      showError("❌ Signup Failed: " + err.message);
-    }
-  };
+        // Load Data from Firebase
+        async function loadDataFromFirebase() {
+            showLoading(true);
+            try {
+                const doc = await db.collection('website').doc('data').get();
+                if (doc.exists) {
+                    const data = doc.data();
+                    renderAll(data);
+                } else {
+                    // First time - set default data
+                    await db.collection('website').doc('data').set(defaultData);
+                    renderAll(defaultData);
+                }
+            } catch (error) {
+                console.error("Error loading data:", error);
+                renderAll(defaultData);
+            }
+            showLoading(false);
+        }
 
-  // GOOGLE LOGIN
-  window.googleLogin = async function () {
-    try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-      showMsg("✅ Google Login Successful!");
-    } catch (err) {
-      showError("❌ Google Login Failed: " + err.message);
-    }
-  };
+        // Render All
+        function renderAll(data) {
+            renderProfile(data.profile);
+            renderSocial(data.social);
+            renderProducts(data.products);
+            renderBlogs(data.blogs);
+            renderAdminLists(data);
+        }
 
-  // LOGOUT
-  window.logoutUser = async function () {
-    await signOut(auth);
-    showMsg("❌ Logged Out Successfully!");
-  };
+        function renderProfile(profile) {
+            const img = document.getElementById('heroImage');
+            img.src = profile.image;
+            img.onerror = () => {
+                img.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="250" height="250"><rect fill="%231a1a2e" width="250" height="250"/><text fill="%23666" x="50%" y="50%" text-anchor="middle" dy=".3em">No Image</text></svg>';
+            };
+            document.getElementById('heroName').textContent = profile.name;
+            document.getElementById('heroTagline').textContent = profile.tagline;
+            
+            // Update admin fields
+            document.getElementById('adminHeroName').value = profile.name;
+            document.getElementById('adminHeroTagline').value = profile.tagline;
+        }
 
-  // ADMIN SAVE PROFILE
-  window.saveProfile = async function () {
-    try {
-      const name = document.getElementById("editName").value;
-      const tag = document.getElementById("editTag").value;
+        function renderSocial(social) {
+            const grid = document.getElementById('socialGrid');
+            grid.innerHTML = social.map(s => `
+                <a href="${s.url}" target="_blank" class="social-card ${s.platform} reveal">
+                    <div class="social-icon">${s.icon}</div>
+                    <div class="social-name">${s.name}</div>
+                    <div class="social-link">${s.url.replace('https://', '')}</div>
+                </a>
+            `).join('');
+            setupScrollReveal();
+        }
 
-      await setDoc(doc(db, "portfolio", "site"), {
-        profile: { name, tagline: tag }
-      });
+        function renderProducts(products) {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = products.map(p => `
+                <div class="product-card reveal">
+                    <img src="${p.image}" class="product-image" onerror="this.src='https://via.placeholder.com/400x250/1a1a2e/666?text=No+Image'">
+                    <div class="product-info">
+                        <h3 class="product-title">${p.title}</h3>
+                        <p class="product-description">${p.description}</p>
+                        <div class="product-price">₹${p.price}</div>
+                        <button class="buy-btn" onclick="buyProduct('${p.id}')">Buy Now</button>
+                    </div>
+                </div>
+            `).join('');
+            setupScrollReveal();
+        }
 
-      alert("✅ Profile Updated Permanently!");
-    } catch (err) {
-      alert("❌ Error Saving: " + err.message);
-    }
-  };
-</script>
+        function renderBlogs(blogs) {
+            const grid = document.getElementById('blogGrid');
+            grid.innerHTML = blogs.map(b => `
+                <div class="blog-card reveal" onclick="openBlogDetail('${b.id}')">
+                    <div class="blog-date">${formatDate(b.date)}</div>
+                    <h3 class="blog-title">${b.title}</h3>
+                    <p class="blog-excerpt">${b.excerpt}</p>
+                </div>
+            `).join('');
+            setupScrollReveal();
+        }
 
+        function renderAdminLists(data) {
+            // Social
+            document.getElementById('socialList').innerHTML = data.social.map(s => `
+                <li>
+                    <span>${s.icon} ${s.name}</span>
+                    <div class="item-actions">
+                        <button class="edit-btn" onclick="editItem('social', '${s.id}')">Edit</button>
+                        <button class="delete-btn" onclick="deleteItem('social', '${s.id}')">Delete</button>
+                    </div>
+                </li>
+            `).join('');
+
+            // Products
+            document.getElementById('productList').innerHTML = data.products.map(p => `
+                <li>
+                    <span>${p.title} - ₹${p.price}</span>
+                    <div class="item-actions">
+                        <button class="edit-btn" onclick="editItem('product', '${p.id}')">Edit</button>
+                        <button class="delete-btn" onclick="deleteItem('product', '${p.id}')">Delete</button>
+                    </div>
+                </li>
+            `).join('');
+
+            // Blogs
+            document.getElementById('blogList').innerHTML = data.blogs.map(b => `
+                <li>
+                    <span>${b.title}</span>
+                    <div class="item-actions">
+                        <button class="edit-btn" onclick="editItem('blog', '${b.id}')">Edit</button>
+                        <button class="delete-btn" onclick="deleteItem('blog', '${b.id}')">Delete</button>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        // Auth Functions
+        function openAuthModal(type) {
+            document.getElementById('authModal').classList.add('active');
+            switchAuthTab(type);
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('active');
+        }
+
+        function switchAuthTab(type) {
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(type + 'Form').classList.add('active');
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            showLoading(true);
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                closeAuthModal();
+                showToast('Login successful!');
+            } catch (error) {
+                showToast('Error: ' + error.message, true);
+            }
+            showLoading(false);
+        }
+
+        async function handleSignup(e) {
+            e.preventDefault();
+            showLoading(true);
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+
+            try {
+                const result = await auth.createUserWithEmailAndPassword(email, password);
+                await result.user.updateProfile({ displayName: name });
+                closeAuthModal();
+                showToast('Account created successfully!');
+            } catch (error) {
+                showToast('Error: ' + error.message, true);
+            }
+            showLoading(false);
+        }
+
+        async function loginWithGoogle() {
+            showLoading(true);
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                await auth.signInWithPopup(provider);
+                closeAuthModal();
+                showToast('Login successful!');
+            } catch (error) {
+                showToast('Error: ' + error.message, true);
+            }
+            showLoading(false);
+        }
+
+        async function logout() {
+            await auth.signOut();
+            showToast('Logged out');
+        }
+
+        function updateUIForUser(user) {
+            document.getElementById('authButtons').style.display = 'none';
+            document.getElementById('userMenu').classList.add('active');
+            document.getElementById('userName').textContent = user.displayName || user.email;
+            document.getElementById('userAvatar').src = user.photoURL || 'https://via.placeholder.com/40';
+            
+            // If admin, show admin indicator
+            if (isAdmin) {
+                document.getElementById('userName').innerHTML += ' <span style="color: var(--neon-green);">[Admin]</span>';
+            }
+        }
+
+        function updateUIForGuest() {
+            document.getElementById('authButtons').style.display = 'flex';
+            document.getElementById('userMenu').classList.remove('active');
+            closeAdmin();
+        }
+
+        // Admin Functions
+        function toggleAdmin() {
+            if (isAdmin) {
+                document.getElementById('adminPanel').classList.toggle('active');
+                loadDataFromFirebase(); // Refresh data
+            } else {
+                showToast('Admin access only', true);
+            }
+        }
+
+        function closeAdmin() {
+            document.getElementById('adminPanel').classList.remove('active');
+        }
+
+        function showAdminSection(section) {
+            document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.admin-nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('admin-' + section).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Admin Edit Functions
+        async function updateProfileImage() {
+            if (!tempImageFile) {
+                showToast('Please select an image first', true);
+                return;
+            }
+
+            showLoading(true);
+            try {
+                const storageRef = storage.ref('profile.jpg');
+                await storageRef.put(tempImageFile);
+                const url = await storageRef.getDownloadURL();
+                
+                await db.collection('website').doc('data').update({
+                    'profile.image': url
+                });
+                
+                tempImageFile = null;
+                document.getElementById('profilePreview').classList.remove('active');
+                showToast('Profile image updated!');
+                loadDataFromFirebase();
+            } catch (error) {
+                showToast('Error: ' + error.message, true);
+            }
+            showLoading(false);
+        }
+
+        async function updateHeroText() {
+            const name = document.getElementById('adminHeroName').value;
+            const tagline = document.getElementById('adminHeroTagline').value;
+            
+            showLoading(true);
+            try {
+                await db.collection('website').doc('data').update({
+                    'profile.name': name,
+                    'profile.tagline': tagline
+                });
+                showToast('Hero text updated!');
+                loadDataFromFirebase();
+            } catch (error) {
+                showToast('Error: ' + error.message, true);
+            }
+            showLoading(false);
+        }
+
+        function openAddModal(type) {
+            currentEditType = type;
+            currentEditId = null;
+            showEditModal(type, null);
+        }
+
+        function editItem(type, id) {
+            currentEditType = type;
+            currentEditId = id;
+            showEditModal(type, id);
+        }
+
+        async function deleteItem(type, id) {
+            if (!confirm('Are you sure?')) return;
+            
+            showLoading(true);
+            try {
+                const doc = await db.collection('website').doc('data').get();
+                const data = doc.data();
+                const arrayName = type + 's';
+                const updatedArray = data[arrayName].filter(item => item.id !== id);
+                
+                await db.collection('website').doc('data').update({
+                    [arrayName]: updatedArray
+                });
+                
+                showToast('Deleted successfully!');
+                loadDataFromFirebase();
+            } catch (error) {
+                showToast('Error: ' + error.message, true);
+            }
+            showLoading(false);
+        }
+
+        function showEditModal(type, id) {
+            const modal = document.getElementById('editModal');
+            const title = document.getElementById('editModalTitle');
+            const fields = document.getElementById('editFormFields');
+            
+            modal.classList.add('active');
+            
+            if (type === 'social') {
+                title.textContent = id ? 'Edit Social Link' : 'Add Social Link';
+                fields.innerHTML = `
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="editName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Platform</label>
+                        <select id="editPlatform">
+                            <option value="instagram">Instagram</option>
+                            <option value="twitter">Twitter</option>
+                            <option value="telegram">Telegram</option>
+                            <option value="facebook">Facebook</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>URL</label>
+                        <input type="url" id="editUrl" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Icon</label>
+                        <input type="text" id="editIcon" maxlength="2" required>
+                    </div>
+                `;
+            } else if (type === 'product') {
+                title.textContent = id ? 'Edit Product' : 'Add Product';
+                fields.innerHTML = `
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="editTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="editDescription" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Price (₹)</label>
+                        <input type="number" id="editPrice" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Image URL</label>
+                        <input type="url" id="editImage" required>
+                    </div>
+                `;
+            } else if (type === 'blog') {
+                title.textContent = id ? 'Edit Blog' : 'Add Blog';
+                fields.innerHTML = `
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="editBlogTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Excerpt</label>
+                        <textarea id="editExcerpt" rows="2" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Content</label>
+                        <textarea id="editContent" rows="4" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="editDate" required>
+                    </div>
+                `;
+            }
+
+            // Fill data if editing
+            if (id) {
+                fillEditForm(type, id);
+            }
+        }
+
+        async function fillEditForm(type, id) {
+            const doc = await db.collection('website').doc('data').get();
+            const data = doc.data();
+            const item = data[type + 's'].find(i => i.id === id);
+            
+            if (type === 'social') {
+                document.getElementById('editName').value = item.name;
+                document.getElementById('editPlatform').value = item.platform;
+                document.getElementById('editUrl').value = item.url;
+                document.getElementById('editIcon').value = item.icon;
+            } else if (type === 'product') {
+                document.getElementById('editTitle').value = item.title;
+                document.getElementById('editDescription').value = item.description;
+                document.getElementById('editPrice').value = item.price;
+                document.getElementById('editImage').value = item.image;
+            } else if (type === 'blog') {
+                document.getElementById('editBlogTitle').value = item.title;
+                document.getElementById('editExcerpt').value = item.excerpt;
+                document.getElementById('editContent').value = item.content;
+                document.getElementById('editDate').value = item.date;
+            }
+        }
+
+        async function handleEditSubmit(e) {
+            e.preventDefault();
+            showLoading(true);
+            
+            try {
+                const doc = await db.collection('website').doc('data').get();
+                const data = doc.data();
+                const arrayName = currentEditType + 's';
+                let array = data[arrayName];
+                
+                let newItem;
+                if (currentEditType === 'social') {
+                    newItem = {
+                        id: currentEditId || Date.now().toString(),
+                        name: document.getElementById('editName').value,
+                        platform: document.getElementById('editPlatform').value,
+                        url: document.getElementById('editUrl').value,
+                        icon: document.getElementById('editIcon').value
+                    };
+                } else if (currentEditType === 'product') {
+                    newItem = {
+                        id: currentEditId || Date.now().toString(),
+                        title: document.getElementById('editTitle').value,
+                        description: document.getElementById('editDescription').value,
+                        price: parseInt(document.getElementById('editPrice').value),
+                        image: document.getElementById('editImage').value
+                    };
+                } else if (currentEditType === 'blog') {
+                    newItem = {
+                        id: currentEditId || Date.now().toString(),
+                        title: document.getElementById('editBlogTitle').value,
+                        excerpt: document.getElementById('editExcerpt').value,
+                        content: document.getElementById('editContent').value,
+                        date: document.getElementById('editDate').value
+                    };
+                }
+                
+                if (currentEditId) {
+                    const index = array.findIndex(i => i.id === currentEditId);
+                    array[index] = newItem;
+                } else {
+                    array.push(newItem);
+                }
+                
+                await db.collection('website').doc('data').update({
+                    [arrayName]: array
+                });
+                
+                closeModal('editModal');
+                showToast(currentEditId ? 'Updated!' : 'Added!');
+                loadDataFromFirebase();
+            } catch (error) {
+                showToast('Error: ' + error.message, true);
+            }
+            showLoading(false);
+        }
+
+        // Utility Functions
+        function previewImage(input, previewId) {
+            const file = input.files[0];
+            if (file) {
+                tempImageFile = file;
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const preview = document.getElementById(previewId);
+                    preview.src = e.target.result;
+                    preview.classList.add('active');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function openBlogDetail(id) {
+            db.collection('website').doc('data').get().then(doc => {
+                const blog = doc.data().blogs.find(b => b.id === id);
+                document.getElementById('blogDetailTitle').textContent = blog.title;
+                document.getElementById('blogDetailDate').textContent = formatDate(blog.date);
+                document.getElementById('blogDetailContent').textContent = blog.content;
+                document.getElementById('mainContent').classList.add('hidden');
+                document.getElementById('blogDetail').classList.add('active');
+                window.scrollTo(0, 0);
+            });
+        }
+
+        function closeBlogDetail() {
+            document.getElementById('blogDetail').classList.remove('active');
+            document.getElementById('mainContent').classList.remove('hidden');
+        }
+
+        function buyProduct(id) {
+            if (!currentUser) {
+                openAuthModal('login');
+                showToast('Please login to buy', true);
+                return;
+            }
+            // Razorpay integration here
+            showToast('Payment gateway coming soon!');
+        }
+
+        function formatDate(dateStr) {
+            return new Date(dateStr).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').classList.toggle('active', show);
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = isError ? 'toast error show' : 'toast show';
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function setupScrollReveal() {
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) entry.target.classList.add('active');
+                });
+            }, { threshold: 0.1 });
+            
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        }
+
+        // Close modals on outside click
+        window.onclick = function(e) {
+            if (e.target.classList.contains('auth-modal') || e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+            }
+        }
+    </script>
 </body>
 </html>
